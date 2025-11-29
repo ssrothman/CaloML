@@ -20,6 +20,7 @@ Truth definitions are easy to create for different subdetectors, or multiple sim
     - [HGCAL L1 Trigger Truth](#hgcal-l1-trigger-truth)
   - [1.2 Example configs](#12-example-configs)
 - [2. NANO file contents](#2-nano-file-contents)
+  - [detid reference](#detid-reference)
 - [3. Custom configuration](#3-custom-configuration)
   - [3.1 SimHits setup](#31-simhits-setup)
     - [HCAL setup](#hcal-setup)
@@ -91,6 +92,76 @@ The NANO files produced by this package contain the following branches (where fi
      - `frac<i>` is the floating-point fraction of the simenergy in this RecHit that is attributable to that SimCluster. 
      - These are sorted such that `frac<i> >= frac<i+1>`. 
      - When there is no corresponding truth information `frac<i> = 0` and `cluster<i> = -1`
+
+### detid reference
+
+The `det` and `subdet` fields are opaque integers, referencing internal CMSSW enums. For reference, I reproduce here the lookup:
+
+The det field is
+```c++
+enum Detector {
+    Tracker = 1,
+    Muon = 2,
+    Ecal = 3,
+    Hcal = 4,
+    Calo = 5,
+    Forward = 6,
+    VeryForward = 7,
+    HGCalEE = 8,
+    HGCalHSi = 9,
+    HGCalHSc = 10,
+    HGCalTrigger = 11
+};
+```
+
+The ECAL subdetector field is 
+```c++
+enum EcalSubdetector { 
+  EcalBarrel = 1, 
+  EcalEndcap = 2, 
+  EcalPreshower = 3, 
+  EcalTriggerTower = 4, 
+  EcalLaserPnDiode = 5 
+};
+```
+
+The HCAL subdetector field is
+```c++
+enum HcalSubdetector {
+  HcalEmpty = 0,
+  HcalBarrel = 1,
+  HcalEndcap = 2,
+  HcalOuter = 3,
+  HcalForward = 4,
+  HcalTriggerTower = 5,
+  HcalOther = 7
+};
+```
+
+The HGCAL subdetector field is
+```c++
+enum ForwardSubdetector {
+  ForwardEmpty = 0,
+  FastTime = 1,
+  BHM = 2,
+  HGCEE = 3,
+  HGCHEF = 4,
+  HGCHEB = 5,
+  HFNose = 6,
+  HGCTrigger = 7
+};
+```
+
+The L1T HGCAL subdetector field is
+```c++
+enum HGCalTriggerSubdetector { 
+  HFNoseTrigger = 0, 
+  HGCalEETrigger = 1, 
+  HGCalHSiTrigger = 2, 
+  HGCalHScTrigger = 3 
+};
+```
+
 
 ## 3. Custom configuration
 
