@@ -123,8 +123,9 @@ The SimTruth definition is built in multiple steps, corresponding to different p
  - HGCAL: offline HGCAL truth
  - L1THGCAL: HGCAL truth for L1 trigger
  - HCAL: Simultaneous truth for HBHE, HO, and HF
- - ECAL: Simultaneous truth for EB, EE, and ES
- - ECALHCAL: Simultaneous truth for HCAL (as above) and ECAL (as above)
+ - ECALALL: Simultaneous truth for EB, EE, and ES
+ - ECALBARREL: Truth for EB
+ - ECALHCAL: Simultaneous truth for HCAL (as above) and EB (as above)
 
 The behavior can easily be modified by changng the parameters in `common_cff.py`, or else by defining new `subdet`'s. Note that the `subdet` string is used in the names of various CMSSW modules and so any new `subdet` names should be distinct from all others (to avoid name clashes) and follow all CMSSW naming rules (eg no underscores). 
 

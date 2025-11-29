@@ -43,11 +43,19 @@ rechits = {
         'props_producer' : 'HORecHitPropertiesTableProducer',
         'hittruth_producer' : 'HORecHitTruthBuilder'
     },
-    'ECAL' : {
+    'ECALBARREL' : {
         'hits' : cms.VInputTag(
             'ecalRecHit:EcalRecHitsEB',
-            #'ecalRecHit:EcalRecHitsEE',
-            #'ecalPreshowerRecHit:EcalRecHitsES'
+        ),
+        'pos_producer' : 'EcalRecHitPositionTableProducer',
+        'props_producer' : 'EcalRecHitPropertiesTableProducer',
+        'hittruth_producer' : 'EcalRecHitTruthBuilder'
+    },
+    'ECALALL' : {
+        'hits' : cms.VInputTag(
+            'ecalRecHit:EcalRecHitsEB',
+            'ecalRecHit:EcalRecHitsEE',
+            'ecalPreshowerRecHit:EcalRecHitsES'
         ),
         'pos_producer' : 'EcalRecHitPositionTableProducer',
         'props_producer' : 'EcalRecHitPropertiesTableProducer',
@@ -96,28 +104,38 @@ merging_params = {
     ),
 
     #geometry is a guess. would love to find a real diagram
-    'ECAL' : cms.PSet(
+    'ECALALL' : cms.PSet(
         caloR = cms.double(135.0),
         caloZ = cms.double(310.0),
         overlapThreshold = cms.double(0.2),
         distanceTol = cms.double(0.1),
         simhits = cms.VInputTag(
             'g4SimHits:EcalHitsEB',
-            #'g4SimHits:EcalHitsEE',
-            #'g4SimHits:EcalHitsES'
+            'g4SimHits:EcalHitsEE',
+            'g4SimHits:EcalHitsES'
         )
-    )
+    ),
+
+    'ECALBARREL' : cms.PSet(
+        caloR = cms.double(135.0),
+        caloZ = cms.double(310.0),
+        overlapThreshold = cms.double(0.2),
+        distanceTol = cms.double(0.1),
+        simhits = cms.VInputTag(
+            'g4SimHits:EcalHitsEB'
+        )
+    )   
 }
 
 merging_params['ECALHCAL'] = cms.PSet(
-    caloR = merging_params['ECAL'].caloR,
-    caloZ = merging_params['ECAL'].caloZ,
+    caloR = merging_params['ECALBARREL'].caloR,
+    caloZ = merging_params['ECALBARREL'].caloZ,
 
     overlapThreshold = cms.double(0.2),
     distanceTol = cms.double(0.1),
 
     simhits = cms.VInputTag(
-        merging_params['ECAL'].simhits +
+        merging_params['ECALBARREL'].simhits +
         merging_params['HCAL'].simhits
     )
 )
