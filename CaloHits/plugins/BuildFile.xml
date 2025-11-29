@@ -23,6 +23,7 @@
     <use name="L1Trigger/L1THGCal" />
     <use name="hepmc" />
     <use name="heppdt" />
+    <use name="SimCalorimetry/HcalSimAlgos" />
     <flags EDM_PLUGIN="1" />
 </library>
 

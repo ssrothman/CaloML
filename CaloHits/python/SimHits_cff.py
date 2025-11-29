@@ -37,8 +37,18 @@ def setupHcalSimHits(process):
         "RelabelledHcalSimHitsProducer",
         src = cms.InputTag('g4SimHits','HcalHits')
     )
+
+    from SimCalorimetry.HcalSimProducers.hcalSimParameters_cfi import hcalSimParameters 
+
+    process.CalibratedHcalSimHits = cms.EDProducer(
+        'CalibratedHcalSimHitsProducer',
+        src = cms.InputTag('RelabelledHcalSimHits'),
+        HcalSimParameters = hcalSimParameters 
+    )
+
     process.HcalSimHitTask = cms.Task(
-        process.RelabelledHcalSimHits
+        process.RelabelledHcalSimHits,
+        process.CalibratedHcalSimHits
     )
     process.schedule.associate(process.HcalSimHitTask)
     return process

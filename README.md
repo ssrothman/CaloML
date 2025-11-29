@@ -65,7 +65,7 @@ scram b -j8
 
 ### 1.2 Example configs
 
-Example `cmsRun` configs can be found in `CaloML/SimTruth/test/`. By default I have provided an example config for Run3 ECAL+HCAL clustering ([run3_NANO.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run3_NANO.py)) and an example config for simultaneous online+offline Run4 HGCAL clustering ([run4_NANO.py]([TO DO](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run4_NANO.py))).
+Example `cmsRun` configs can be found in `CaloML/SimTruth/test/`. By default I have provided an example config for Run3 ECAL+HCAL clustering ([run3_NANO.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run3_NANO.py)) and an example config for simultaneous online+offline Run4 HGCAL clustering ([run4_NANO.py]((https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run4_NANO.py))).
 
 An appropriate input file must contain:
  - All of the RecHits for the subdetector(s) of interest
@@ -100,7 +100,7 @@ The SimHits for HGCAL, L1THGCAL, and HCAL need some additional setup before we c
 
 #### HCAL setup
 
-HCAL SimHits need to be [relabled](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/CaloHits/plugins/RelabelledHcalSimHitsProducer.cc) and [calibrated](TO DO) before passing them to the rest of my code. I have defined a process modifier `setupHcalSimHits()`, defined in [SimHits_cff.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/CaloHits/python/SimHits_cff.py) for this task. 
+HCAL SimHits need to be [relabled](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/CaloHits/plugins/RelabelledHcalSimHitsProducer.cc) and [calibrated]((https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/CaloHits/plugins/CalibratedHcalSimHitsProducer.cc)) before passing them to the rest of my code. I have defined a process modifier `setupHcalSimHits()`, defined in [SimHits_cff.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/CaloHits/python/SimHits_cff.py) for this task. 
 
 #### HGCAL setup
 

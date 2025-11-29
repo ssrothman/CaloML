@@ -46,8 +46,8 @@ rechits = {
     'ECAL' : {
         'hits' : cms.VInputTag(
             'ecalRecHit:EcalRecHitsEB',
-            'ecalRecHit:EcalRecHitsEE',
-            'ecalPreshowerRecHit:EcalRecHitsES'
+            #'ecalRecHit:EcalRecHitsEE',
+            #'ecalPreshowerRecHit:EcalRecHitsES'
         ),
         'pos_producer' : 'EcalRecHitPositionTableProducer',
         'props_producer' : 'EcalRecHitPropertiesTableProducer',
@@ -91,7 +91,7 @@ merging_params = {
         overlapThreshold = cms.double(0.2),
         distanceTol = cms.double(0.1),
         simhits = cms.VInputTag(
-            'RelabelledHcalSimHits'
+            'CalibratedHcalSimHits'
         )
     ),
 
@@ -103,6 +103,8 @@ merging_params = {
         distanceTol = cms.double(0.1),
         simhits = cms.VInputTag(
             'g4SimHits:EcalHitsEB',
+            #'g4SimHits:EcalHitsEE',
+            #'g4SimHits:EcalHitsES'
         )
     )
 }
