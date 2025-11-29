@@ -1,4 +1,4 @@
- # CMSSW Sim Truth Package
+ # CMSSW Sim Truth Package <!-- omit from toc -->
 
  This package provides utilities for:
   
@@ -13,6 +13,23 @@
 This code is designed to be completely modular and compatible with all of the different CMSSW calorimeter hit datatypes, including all calorimeter subsystems (ECAL [EB, EE, ES], HCAL [HBHE, HO,HF], HGCAL, and HGCAL L1T). Note that the L1T HGCAL functionality requires the L1 HGCAL Trigger Primitives branch [see later]. 
 
 Truth definitions are easy to create for different subdetectors, or multiple simultaneous subdetectors (eg ECAL+HCAL). Default definitions are provided for ECAL, HCAL, ECAL+HCAL, HGCAL, and L1THGCAL
+
+- [1. Quick start](#1-quick-start)
+  - [1.1 Setup your environment](#11-setup-your-environment)
+    - [Offline truth](#offline-truth)
+    - [HGCAL L1 Trigger Truth](#hgcal-l1-trigger-truth)
+  - [1.2 Example configs](#12-example-configs)
+- [2. NANO file contents](#2-nano-file-contents)
+- [3. Custom configuration](#3-custom-configuration)
+  - [3.1 SimHits setup](#31-simhits-setup)
+    - [HCAL setup](#hcal-setup)
+    - [HGCAL setup](#hgcal-setup)
+    - [L1THGCAL setup](#l1thgcal-setup)
+    - [ECAL setup](#ecal-setup)
+  - [3.2 Build merged sim truth](#32-build-merged-sim-truth)
+  - [3.3 Write flat NanoAOD tables](#33-write-flat-nanoaod-tables)
+- [4. Technical details](#4-technical-details)
+
 
 ## 1. Quick start
 
@@ -48,7 +65,17 @@ scram b -j8
 
 ### 1.2 Example configs
 
-Example `cmsRun` configs can be found in `CaloML/SimTruth/test/`. By default I have provided an example config for Run3 ECAL+HCAL clustering ([run3_NANO.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run3_NANO.py)) and an example config for simultaneous online+offline Run4 HGCAL clustering ([run4_NANO.py](TO DO)).
+Example `cmsRun` configs can be found in `CaloML/SimTruth/test/`. By default I have provided an example config for Run3 ECAL+HCAL clustering ([run3_NANO.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run3_NANO.py)) and an example config for simultaneous online+offline Run4 HGCAL clustering ([run4_NANO.py]([TO DO](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/test/run4_NANO.py))).
+
+An appropriate input file must contain:
+ - All of the RecHits for the subdetector(s) of interest
+ - The geant4 sim information
+
+Then, simply modify the test config to point at your input file, and run 
+
+```bash
+cmsRun CaloML/SimTruth/test/<cfg>.py
+```
 
 ## 2. NANO file contents
 
