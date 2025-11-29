@@ -1,0 +1,14 @@
+<lcgdict>
+  <class name="CaloML::HitTruthInfo" />
+  <class name="std::vector<CaloML::HitTruthInfo>" />
+  <class name="edm::Wrapper<CaloML::HitTruthInfo>" />
+  <class name="edm::Wrapper<std::vector<CaloML::HitTruthInfo> >" />
+  <class name="CaloML::MergedSimClusterInfo" />
+  <class name="std::vector<CaloML::MergedSimClusterInfo>" />
+  <class name="edm::Wrapper<CaloML::MergedSimClusterInfo>" />
+  <class name="edm::Wrapper<std::vector<CaloML::MergedSimClusterInfo> >" />
+  <class name="CaloML::SimTrackInfo" />
+  <class name="std::vector<CaloML::SimTrackInfo>" />
+  <class name="edm::Wrapper<CaloML::SimTrackInfo>" />
+  <class name="edm::Wrapper<std::vector<CaloML::SimTrackInfo> >" />
+</lcgdict>
