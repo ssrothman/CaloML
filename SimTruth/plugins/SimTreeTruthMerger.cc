@@ -34,6 +34,7 @@ public:
     
     void produce(edm::Event&, const edm::EventSetup&) override;
     void beginRun(const edm::Run&, const edm::EventSetup&) override;
+    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
     uint32_t recursive_find_parent(
@@ -267,6 +268,17 @@ void SimTreeTruthMerger::produce(edm::Event& evt, const edm::EventSetup& es) {
     evt.put(std::move(mergedclusters), "mergedSimClusters");
     evt.put(std::move(relabeledSimHits), "relabeledSimHits");
     evt.put(std::move(mergedtracks), "mergedSimTracks");
+}
+
+void SimTreeTruthMerger::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+    edm::ParameterSetDescription desc;
+    desc.add<edm::InputTag>("simtracks", edm::InputTag(""));
+    desc.add<edm::InputTag>("simvertices", edm::InputTag(""));
+    desc.add<std::vector<edm::InputTag>>("simhits", std::vector<edm::InputTag>());
+    desc.add<double>("caloR", 300.0);
+    desc.add<double>("caloZ", 300.0);
+    desc.add<int>("verbose", 0);
+    descriptions.add("simTreeTruthMerger", desc);
 }
 
 DEFINE_FWK_MODULE(SimTreeTruthMerger);

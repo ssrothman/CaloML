@@ -5,6 +5,8 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
+#include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 
 #include "SimDataFormats/CaloHit/interface/PCaloHit.h"
 #include "SimDataFormats/CaloHit/interface/PCaloHitContainer.h"
@@ -38,6 +40,7 @@ public:
     explicit HitOverlapTruthMerger(const edm::ParameterSet&);
     
     void produce(edm::Event&, const edm::EventSetup&) override;
+    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
     double computeOverlap(
@@ -233,6 +236,16 @@ void HitOverlapTruthMerger::produce(edm::Event& evt, const edm::EventSetup& es) 
     evt.put(std::move(mergedClusters), "mergedSimClusters");
     evt.put(std::move(mergedTracks), "mergedSimTracks");
     evt.put(std::move(mergedClusterInfos), "mergedSimClusterInfos");
+}
+
+void HitOverlapTruthMerger::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+    edm::ParameterSetDescription desc;
+    desc.add<edm::InputTag>("simclusters", edm::InputTag(""));
+    desc.add<edm::InputTag>("simclusterInfos", edm::InputTag(""));
+    desc.add<std::vector<edm::InputTag>>("simhits", std::vector<edm::InputTag>());
+    desc.add<double>("overlapThreshold", 0.5);
+    desc.add<int>("verbose", 0);
+    descriptions.add("hitOverlapTruthMerger", desc);
 }
 
 DEFINE_FWK_MODULE(HitOverlapTruthMerger);

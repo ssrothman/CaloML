@@ -38,6 +38,7 @@ public:
     
     void produce(edm::Event&, const edm::EventSetup&) override;
     void beginRun(const edm::Run&, const edm::EventSetup&) override;
+    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
     edm::EDGetToken simclusters_token_;
@@ -248,6 +249,21 @@ void ImpactDistanceTruthMerger::produce(edm::Event& evt, const edm::EventSetup& 
     evt.put(std::move(mergedClusters), "mergedSimClusters");
     evt.put(std::move(mergedTracks), "mergedSimTracks");
     evt.put(std::move(mergedClusterInfos), "mergedSimClusterInfos");
+}
+
+void ImpactDistanceTruthMerger::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+    edm::ParameterSetDescription desc;
+    desc.add<edm::InputTag>("simclusters", edm::InputTag(""));
+    desc.add<edm::InputTag>("simclusterInfos", edm::InputTag(""));
+    desc.add<std::vector<edm::InputTag>>("simhits", std::vector<edm::InputTag>());
+    desc.add<double>("caloR", 300.0);
+    desc.add<double>("caloZ", 300.0);
+    desc.add<double>("distanceTol", 10.0);
+    desc.add<double>("dRTol", 0.5);
+    desc.add<double>("dEtaTol", 0.2);
+    desc.add<double>("dPhiTol", 0.2);
+    desc.add<int>("verbose", 0);
+    descriptions.add("impactDistanceTruthMerger", desc);
 }
 
 DEFINE_FWK_MODULE(ImpactDistanceTruthMerger);
