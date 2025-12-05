@@ -22,10 +22,9 @@ public:
   explicit MergedSimClusterInfoTableProducer(edm::ParameterSet const& params)
       : name_(params.getParameter<std::string>("name")),
         doc_(params.getParameter<std::string>("doc")),
-        src_(params.getParameter<edm::InputTag>("src")),
         extension_(params.getParameter<bool>("extension")),
-        token_(consumes<std::vector<CaloML::MergedSimClusterInfo>>(src_)),
-        nleaders_(4) {
+        src_(params.getParameter<edm::InputTag>("src")),
+        token_(consumes<std::vector<CaloML::MergedSimClusterInfo>>(src_)) {
     produces<nanoaod::FlatTable>();
   }
 
@@ -38,14 +37,14 @@ public:
     std::vector<int> nParticles;
 
     // invert: array of vectors rather than vector of arrays
-    std::array<std::vector<int>, nleaders_> pdgids;
-    std::array<std::vector<float>, nleaders_> energies;
-    std::array<std::vector<float>, nleaders_> vtx_x, vtx_y, vtx_z, vtx_t;
-    std::array<std::vector<float>, nleaders_> calo_x, calo_y, calo_z, calo_t;
+    std::array<std::vector<int>, NLEADERS> pdgids;
+    std::array<std::vector<float>, NLEADERS> energies;
+    std::array<std::vector<float>, NLEADERS> vtx_x, vtx_y, vtx_z, vtx_t;
+    std::array<std::vector<float>, NLEADERS> calo_x, calo_y, calo_z, calo_t;
 
     size_t nrows = clusters.isValid() ? clusters->size() : 0;
 
-    for (int i = 0; i < nleaders_; ++i) {
+    for (int i = 0; i < NLEADERS; ++i) {
       pdgids[i].reserve(nrows);
       energies[i].reserve(nrows);
       vtx_x[i].reserve(nrows);
@@ -61,7 +60,7 @@ public:
     for (const auto& cl : *clusters) {
       nParticles.push_back(static_cast<int>(cl.pdgids.size()));
 
-      for (unsigned i = 0; i < nleaders_; ++i) {
+      for (unsigned i = 0; i < NLEADERS; ++i) {
         if (i < cl.pdgids.size()) {
           pdgids[i].push_back(cl.pdgids[i]);
           energies[i].push_back((i < cl.energies.size()) ? cl.energies[i] : 0.f);
@@ -92,7 +91,7 @@ public:
     tab->addColumn<int>("nParticles", nParticles, "Number of contributing sim particles");
 
     // add per-leader columns
-    for (int i = 0; i < nleaders_; ++i) {
+    for (int i = 0; i < NLEADERS; ++i) {
       std::string pdgName = "pdg" + std::to_string(i);
       std::string enName = "energy" + std::to_string(i);
 
@@ -138,7 +137,7 @@ private:
   const edm::InputTag src_;
   edm::EDGetTokenT<std::vector<CaloML::MergedSimClusterInfo>> token_;
 
-  const int nleaders_ = 4;
+  static constexpr int NLEADERS = 4;
 };
 
 DEFINE_FWK_MODULE(MergedSimClusterInfoTableProducer);
