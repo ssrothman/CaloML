@@ -124,7 +124,7 @@ process = setupSimTruth(process, 'ECALHCAL', verbose=0)
 process = setupSimTruthTables(process, 'ECALHCAL')
 process = setupSimHitTables(process, 'ECALHCAL')
 
-for subdet in ['ECAL', 'HBHE']: #, 'HO']:
+for subdet in ['ECALBARREL', 'HBHE']: #, 'HO']:
     process = setupRecHitTables(process, subdet, truth='ECALHCAL')
 
 # End of customisation functions

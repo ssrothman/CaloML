@@ -51,7 +51,7 @@ def setupSimTruth(process, subdet, verbose=0):
     setattr(process, 'ImpactDistanceTruthMerger%s'%subdet,
         cms.EDProducer(
             'ImpactDistanceTruthMerger',
-            simvertices = cms.InputTag('g4SimHits'),
+            #simvertices = cms.InputTag('g4SimHits'),
             simhits = cms.VInputTag('SimTreeTruthMerger%s:relabeledSimHits'%subdet),
             simclusters = cms.InputTag('SimTreeTruthMerger%s:mergedSimClusters'%subdet),
             simclusterInfos = cms.InputTag('SimTreeMergedClusterInfo%s'%subdet),
