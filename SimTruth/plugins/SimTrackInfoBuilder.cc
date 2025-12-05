@@ -117,7 +117,7 @@ void SimTrackInfoBuilder::produce(edm::Event& evt, const edm::EventSetup& es) {
             trackP.vertex().X(),
             trackP.vertex().Y(),
             trackP.vertex().Z(),
-            0.0
+            trackP.vertex().T()
         );
         simTrackInfos->push_back(info);
     }
