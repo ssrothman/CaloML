@@ -107,9 +107,19 @@ def setupSimTruthTables(process, subdet):
         )
     )
 
+    setattr(process, 'MergedSimClusterInfo%sTable'%subdet,
+        cms.EDProducer("MergedSimClusterInfoTableProducer",
+            name = cms.string('MergedSimCluster%s'%subdet),
+            doc = cms.string(''),
+            src = cms.InputTag('HitOverlapTruthMerger%s:mergedSimClusterInfos'%subdet),
+            extension = cms.bool(True)
+        )
+    )
+
     setattr(process, 'SimTruth%sTablesTask'%subdet,
         cms.Task(
-            getattr(process, 'MergedSimCluster%sTable'%subdet)
+            getattr(process, 'MergedSimCluster%sTable'%subdet),
+            getattr(process, 'MergedSimClusterInfo%sTable'%subdet)
         )
     )
 
