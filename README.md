@@ -214,4 +214,4 @@ The reco-level processmodifier takes two arguments to allow for the possibilty o
 
 ## 4. Technical details
 
-The mechanics of the truth definition and some studies can be found [here](TBD: link to some slides).
+The mechanics of the truth definition are detailed in slides [here](https://docs.google.com/presentation/d/1ELqLcqRZ1xdQrV5IbrIfoffT0ajOvjTFdIlm5xdPgv4/edit?usp=sharing). Validation studies are available [here](TO DO).
