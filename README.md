@@ -59,7 +59,7 @@ cmsrel CMSSW_15_0_6
 cd CMSSW_15_0_6/src
 cmsenv
 git cms-init
-git cms-merge-topic ssrothman:ECON_15_0_0
+git cms-merge-topic ssrothman:ECON_15_0_6
 git clone git@github.com:ssrothman/CaloML.git -b CMSSW_15_0_X
 scram b -j8
 ```
