@@ -131,8 +131,8 @@ merging_params['ECALHCAL'] = cms.PSet(
     caloR = merging_params['ECALBARREL'].caloR,
     caloZ = merging_params['ECALBARREL'].caloZ,
 
-    overlapThreshold = cms.double(0.2),
-    distanceTol = cms.double(0.1),
+    overlapThreshold = cms.double(0.0),
+    distanceTol = cms.double(0.0),
 
     simhits = cms.VInputTag(
         merging_params['ECALBARREL'].simhits +

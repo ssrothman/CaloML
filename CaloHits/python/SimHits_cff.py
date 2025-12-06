@@ -68,7 +68,7 @@ def setupSimHitTables(process, subdet):
         props_producer = 'HGCalSimHitPropertiesTableProducer' #HGCal properties producer is same for L1T and offline
     else:
         position_producer = 'CaloSimHitPositionTableProducer'
-        props_producer = 'CaloSimHitPropertiesTableProducer'
+        props_producer = 'GenericSimHitPropertiesTableProducer'
 
     setattr(process, 'SimHit%sPositionTable'%subdet,
         cms.EDProducer(

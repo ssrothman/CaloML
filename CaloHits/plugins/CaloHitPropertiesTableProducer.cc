@@ -27,10 +27,12 @@
 #include "DataFormats/HcalRecHit/interface/HORecHit.h"
 #include "DataFormats/ParticleFlowReco/interface/PFRecHit.h"
 
+#include "CaloML/CaloHits/interface/util.h"
+
 #include <vector>
 #include <iostream>
 
-template <typename T>
+template <typename T, unsigned DET>
 class CaloHitPropertiesTableProducer : public edm::stream::EDProducer<> {
 public:
   CaloHitPropertiesTableProducer(edm::ParameterSet const& params)
@@ -47,60 +49,35 @@ public:
 
   ~CaloHitPropertiesTableProducer() override {}
 
-  uint32_t detIdFromHit(const PCaloHit& hit) { 
-    return hit.id();
-  }
-
-  uint32_t detIdFromHit(const CaloRecHit& hit) { 
-    return hit.detid();
-  }
-
-  uint32_t detIdFromHit(const reco::PFRecHit& hit) { 
-    return hit.detId();
-  }
-
-  uint32_t detIdFromHit(const EcalRecHit& hit) { 
-    return hit.detid();
-  }
-
-  uint32_t detIdFromHit(const HBHERecHit& hit) { 
-    return hit.detid();
-  }
-
-  uint32_t detIdFromHit(const HFRecHit& hit) { 
-    return hit.detid();
-  }
-
-  uint32_t detIdFromHit(const HORecHit& hit) { 
-    return hit.detid();
-  }
-
   void produce(edm::Event& iEvent, const edm::EventSetup& iSetup) override {
     edm::Handle<T> objs;
 
     std::vector<int> dets, subdets;
     std::vector<float> energies, times;
 
+    //only used for HCAL hits
+    std::vector<int> depths;
+
     for (const auto& src : srcs_){
         iEvent.getByToken(src, objs);
 
         for (const auto& obj : *objs) {
             if (cut_(obj)) {
-                DetId detid(detIdFromHit(obj));
+                DetId detid(CaloML::detIdFromHit(obj));
                 DetId::Detector det = detid.det();
+
+                if (det != DET && DET != 0){
+                    throw cms::Exception("CaloHitPropertiesTableProducer") << "Hit DetId does not match configured detector type";
+                }
 
                 dets.push_back(det);
                 energies.push_back(obj.energy());
                 times.push_back(obj.time());
+                subdets.push_back(detid.subdetId()); 
 
-                if (det == DetId::Ecal){
-                    EcalSubdetector subdet = static_cast<EcalSubdetector>(detid.subdetId());
-                    subdets.push_back(subdet);
-                } else if (det == DetId::Hcal){
-                    HcalDetId hcalId(detid);
-                    subdets.push_back(hcalId.subdet());
-                } else {
-                    throw cms::Exception("CaloHitPropertiesTableProducer") << "Unsupported DetId type" << detid.det();
+                if constexpr(DET == DetId::Hcal){
+                    HcalDetId hdetid(detid);
+                    depths.push_back(hdetid.depth());
                 }
             }
         }
@@ -112,6 +89,9 @@ public:
     tab->addColumn<float>("energy", energies, "Hit energy");
     tab->addColumn<float>("time", times, "Hit time");
 
+    if constexpr(DET == DetId::Hcal){
+        tab->addColumn<int>("depth", depths, "HCal depth");
+    }
     iEvent.put(std::move(tab));
   }
 
@@ -121,19 +101,38 @@ protected:
   const StringCutObjectSelector<typename T::value_type> cut_;
 };
 
-typedef CaloHitPropertiesTableProducer<edm::View<PCaloHit>> CaloSimHitPropertiesTableProducer;
-typedef CaloHitPropertiesTableProducer<edm::View<CaloRecHit>> CaloCaloRecHitPropertiesTableProducer;
-typedef CaloHitPropertiesTableProducer<edm::View<reco::PFRecHit>> CaloPFRecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<PCaloHit>, 0> GenericSimHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<CaloRecHit>, 0> GenericCaloRecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<reco::PFRecHit>, 0> GenericPFRecHitPropertiesTableProducer;
 
-typedef CaloHitPropertiesTableProducer<edm::View<EcalRecHit>> EcalRecHitPropertiesTableProducer;
-typedef CaloHitPropertiesTableProducer<edm::View<HBHERecHit>> HBHERecHitPropertiesTableProducer;
-typedef CaloHitPropertiesTableProducer<edm::View<HFRecHit>> HFRecHitPropertiesTableProducer;
-typedef CaloHitPropertiesTableProducer<edm::View<HORecHit>> HORecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<PCaloHit>, DetId::Detector::Ecal> EcalSimHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<CaloRecHit>, DetId::Detector::Ecal> EcalCaloRecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<reco::PFRecHit>, DetId::Detector::Ecal> EcalPFRecHitPropertiesTableProducer;
 
-DEFINE_FWK_MODULE(CaloSimHitPropertiesTableProducer);
-DEFINE_FWK_MODULE(CaloCaloRecHitPropertiesTableProducer);
-DEFINE_FWK_MODULE(CaloPFRecHitPropertiesTableProducer);
+typedef CaloHitPropertiesTableProducer<edm::View<PCaloHit>, DetId::Detector::Hcal> HcalSimHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<CaloRecHit>, DetId::Detector::Hcal> HcalCaloRecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<reco::PFRecHit>, DetId::Detector::Hcal> HcalPFRecHitPropertiesTableProducer;
+
+typedef CaloHitPropertiesTableProducer<edm::View<EcalRecHit>, DetId::Detector::Ecal> EcalRecHitPropertiesTableProducer;
+
+typedef CaloHitPropertiesTableProducer<edm::View<HBHERecHit>, DetId::Detector::Hcal> HBHERecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<HFRecHit>, DetId::Detector::Hcal> HFRecHitPropertiesTableProducer;
+typedef CaloHitPropertiesTableProducer<edm::View<HORecHit>, DetId::Detector::Hcal> HORecHitPropertiesTableProducer;
+
+DEFINE_FWK_MODULE(GenericSimHitPropertiesTableProducer);
+DEFINE_FWK_MODULE(GenericCaloRecHitPropertiesTableProducer);
+DEFINE_FWK_MODULE(GenericPFRecHitPropertiesTableProducer);
+
+DEFINE_FWK_MODULE(EcalSimHitPropertiesTableProducer);
+DEFINE_FWK_MODULE(EcalCaloRecHitPropertiesTableProducer);
+DEFINE_FWK_MODULE(EcalPFRecHitPropertiesTableProducer);
+
+DEFINE_FWK_MODULE(HcalSimHitPropertiesTableProducer);
+DEFINE_FWK_MODULE(HcalCaloRecHitPropertiesTableProducer);
+DEFINE_FWK_MODULE(HcalPFRecHitPropertiesTableProducer);
+
 DEFINE_FWK_MODULE(EcalRecHitPropertiesTableProducer);
+
 DEFINE_FWK_MODULE(HBHERecHitPropertiesTableProducer);
 DEFINE_FWK_MODULE(HFRecHitPropertiesTableProducer);
 DEFINE_FWK_MODULE(HORecHitPropertiesTableProducer);
