@@ -29,7 +29,10 @@ Truth definitions are easy to create for different subdetectors, or multiple sim
     - [ECAL setup](#ecal-setup)
   - [3.2 Build merged sim truth](#32-build-merged-sim-truth)
   - [3.3 Write flat NanoAOD tables](#33-write-flat-nanoaod-tables)
-- [4. Technical details](#4-technical-details)
+- [4. MC generation](#4-mc-generation)
+  - [4.1 GEN-SIM-DIGI](#41-gen-sim-digi)
+  - [4.2 RECO](#42-reco)
+- [5. Technical details](#5-technical-details)
 
 
 ## 1. Quick start
@@ -212,6 +215,80 @@ For reco-level quantities there is:
 
 The reco-level processmodifier takes two arguments to allow for the possibilty of running multiple truth definitions at once (eg for testing, comparison). The `truth` argument is the is name of the "subdet" used for building the truth definition. The `subdet` argument is the name of the subdetector that you want to dump RecHits for. This is also a lookup into a configuration dictionary in [common_cff.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/python/common_cff.py) which defines the RecHit sources and the names of the correct templated produces for that datatype. Note that because the HCAL uses different datatypes for HBHE, HF, and HO, this list of valid `subdet`'s at RecHit level is different from the list of valid `subdet`'s at sim level. 
 
-## 4. Technical details
+## 4. MC generation
+
+The NANO configurations from this repo are compatible with edm files generated in any way, so long as they have the necessary branches. That said, I have also set up a recipe for generating MC from scratch. There are two steps:
+
+### 4.1 GEN-SIM-DIGI
+
+We can generate cmsRun configs with `cmsDriver.py`. There are two different commands for Run 3 or Run 4.
+
+Run 3:
+```bash
+cmsDriver.py Configuration/Generator/python/SinglePiPt10_pythia8_cfi.py \
+    --fileout GSD.root \
+    --mc \
+    --eventcontent FEVTDEBUG \
+    --datatier GEN-SIM-DIGI-RAW \
+    --step GEN,SIM,DIGI,L1,DIGI2RAW,HLT:@relval2024 \
+    --conditions auto:phase1_2024_realistic  \
+    --era Run3_2024  \
+    --beamspot Realistic25ns13p6TeVEarly2022Collision  \
+    --no_exec \
+    --python_filename=CaloML/Processing/test/GSD_Run3.py \
+    --customise CaloML/Processing/customize_generator_cff.customize_particle_gun
+```
+
+Run 4:
+```bash
+cmsDriver.py Configuration/Generator/python/SinglePiPt10_pythia8_cfi.py \
+    --fileout GSD.root \
+    --mc \
+    --eventcontent FEVTDEBUG \
+    --datatier GEN-SIM-DIGI-RAW \
+    --step GEN,SIM,DIGI,L1TrackTrigger,L1,L1P2GT,DIGI2RAW,HLT:@relvalRun4 \
+    --geometry ExtendedRun4D110 \
+    --conditions auto:phase2_realistic_T33_13TeV \
+    --era Phase2C17I13M9 \
+    --beamspot NoSmear \
+    --no_exec \
+    --python_filename=CaloML/Processing/test/GSD_Run4.py \
+    --customise CaloML/Processing/customize_generator_cff.customize_particle_gun
+```
+
+### 4.2 RECO
+
+Run 3:
+```bash
+cmsDriver.py step4 \
+    --filein GSD.root \
+    --fileout RECO.root \
+    --mc \
+    --eventcontent FEVTDEBUG \
+    --datatier GEN-SIM-RECO \
+    --step RAW2DIGI,L1Reco,RECO,RECOSIM \
+    --conditions auto:phase1_2024_realistic \
+    --era Run3_2024 \
+    --no_exec \
+    --python_filename=CaloML/Processing/test/RECO_Run3.py
+```
+
+Run 4:
+```bash
+cmsDriver.py step4 \
+    --filein GSD.root \
+    --fileout RECO.root \
+    --mc \
+    --eventcontent FEVTDEBUG \
+    --datatier GEN-SIM-RECO \
+    --step RAW2DIGI,L1Reco,RECO,RECOSIM \
+    --geometry ExtendedRun4D110 \
+    --conditions auto:phase2_realistic_T33 \
+    --era Phase2C17I13M9 \
+    --no_exec \
+    --python_filename=CaloML/Processing/test/RECO_Run4.py
+```
+
+## 5. Technical details
 
 The mechanics of the truth definition are detailed in slides [here](https://docs.google.com/presentation/d/1ELqLcqRZ1xdQrV5IbrIfoffT0ajOvjTFdIlm5xdPgv4/edit?usp=sharing). Validation studies are available [here](TO DO).
