@@ -22,7 +22,6 @@
 #include "CaloML/DataFormats/interface/MergedSimClusterInfo.h"
 
 namespace CaloML {
-
 // Build a map detId -> total energy from a list of PCaloHit containers
 inline std::unordered_map<uint32_t,double>
 buildTotalEnergies(const std::vector<edm::Handle<edm::PCaloHitContainer>>& simhits_handles) {
@@ -115,7 +114,8 @@ inline SimCluster makeMergedSimCluster(const SimTrack& mergedTrack,
 
 inline CaloML::MergedSimClusterInfo mergeSimClusterInfos(
         const std::vector<CaloML::MergedSimClusterInfo>& simclusterinfos,
-        const std::vector<uint32_t>& component) {
+        const std::vector<uint32_t>& component,
+        CaloML::MERGE_REASON reason) {
 
     CaloML::MergedSimClusterInfo mergedInfo;
 
@@ -126,11 +126,6 @@ inline CaloML::MergedSimClusterInfo mergeSimClusterInfos(
             info.pdgids.begin(),
             info.pdgids.end()
         );
-        mergedInfo.energies.insert(
-            mergedInfo.energies.end(),
-            info.energies.begin(),
-            info.energies.end()
-        );
         mergedInfo.simTrackInfos.insert(
             mergedInfo.simTrackInfos.end(),
             info.simTrackInfos.begin(),
@@ -139,17 +134,17 @@ inline CaloML::MergedSimClusterInfo mergeSimClusterInfos(
     }
 
     //sort descending by energy
-    std::vector<size_t> indices(mergedInfo.energies.size());
+    std::vector<size_t> indices(mergedInfo.pdgids.size());
     std::iota(indices.begin(), indices.end(), 0);
     std::sort(indices.begin(), indices.end(),[&mergedInfo](size_t a, size_t b){
-        return mergedInfo.energies[a] > mergedInfo.energies[b];
+        return mergedInfo.simTrackInfos[a].momentumAtCalo.E() > mergedInfo.simTrackInfos[b].momentumAtCalo.E();
     });
 
     CaloML::MergedSimClusterInfo sortedInfo;
     for(size_t idx : indices){
         sortedInfo.pdgids.push_back(mergedInfo.pdgids[idx]);
-        sortedInfo.energies.push_back(mergedInfo.energies[idx]);
         sortedInfo.simTrackInfos.push_back(mergedInfo.simTrackInfos[idx]);
+        sortedInfo.reasons.push_back(reason);
     }
 
     return sortedInfo;

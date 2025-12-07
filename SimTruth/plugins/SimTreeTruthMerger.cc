@@ -45,7 +45,6 @@ private:
 
     edm::EDGetToken simtracks_token_;
     edm::EDGetToken simvertices_token_;
-    edm::EDGetToken simtrack_infos_token_;
     std::vector<edm::EDGetToken> simhits_tokens_;
 
     double caloR_;

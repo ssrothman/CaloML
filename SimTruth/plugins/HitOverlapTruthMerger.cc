@@ -225,7 +225,8 @@ void HitOverlapTruthMerger::produce(edm::Event& evt, const edm::EventSetup& es) 
             SimTrack mergedTrack = CaloML::mergeTracksFromComponent(simclusters, component);
             auto mergedHitEnergies = CaloML::computeMergedHitEnergiesForComponent(simclusters, component, totalEnergies);
             SimCluster newcluster = CaloML::makeMergedSimCluster(mergedTrack, mergedHitEnergies, totalEnergies);
-            CaloML::MergedSimClusterInfo mergedInfo = CaloML::mergeSimClusterInfos(simclusterinfos, component);
+            CaloML::MergedSimClusterInfo mergedInfo = CaloML::mergeSimClusterInfos(simclusterinfos, component,
+                CaloML::MERGE_REASON::OVERLAP);
 
             mergedClusters->push_back(newcluster);
             mergedTracks->push_back(mergedTrack);

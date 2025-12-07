@@ -94,8 +94,8 @@ void SimClusterInfoBuilder::produce(edm::Event& evt, const edm::EventSetup& es) 
         CaloML::MergedSimClusterInfo info;
 
         info.pdgids.emplace_back(cluster.pdgId());
-        info.energies.emplace_back(cluster.energy());
         info.simTrackInfos.emplace_back(trackInfo);
+        info.reasons.emplace_back(CaloML::MERGE_REASON::NONE);
 
         result->push_back(info);
     }

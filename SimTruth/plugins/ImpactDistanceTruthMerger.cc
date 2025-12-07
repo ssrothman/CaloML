@@ -238,7 +238,8 @@ void ImpactDistanceTruthMerger::produce(edm::Event& evt, const edm::EventSetup& 
             SimTrack mergedTrack = CaloML::mergeTracksFromComponent(simclusters, component);
             auto mergedHitEnergies = CaloML::computeMergedHitEnergiesForComponent(simclusters, component, totalEnergies);
             SimCluster newcluster = CaloML::makeMergedSimCluster(mergedTrack, mergedHitEnergies, totalEnergies);
-            CaloML::MergedSimClusterInfo mergedInfo = CaloML::mergeSimClusterInfos(simclusterinfos, component);
+            CaloML::MergedSimClusterInfo mergedInfo = CaloML::mergeSimClusterInfos(simclusterinfos, component, 
+                CaloML::MERGE_REASON::IMPACT);
             
             mergedClusterInfos->push_back(mergedInfo);
             mergedClusters->push_back(newcluster);

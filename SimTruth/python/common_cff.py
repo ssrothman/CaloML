@@ -51,7 +51,7 @@ rechits = {
         'props_producer' : 'EcalRecHitPropertiesTableProducer',
         'hittruth_producer' : 'EcalRecHitTruthBuilder'
     },
-    'ECALALL' : {
+    'ECAL' : {
         'hits' : cms.VInputTag(
             'ecalRecHit:EcalRecHitsEB',
             'ecalRecHit:EcalRecHitsEE',
@@ -104,7 +104,7 @@ merging_params = {
     ),
 
     #geometry is a guess. would love to find a real diagram
-    'ECALALL' : cms.PSet(
+    'ECAL' : cms.PSet(
         caloR = cms.double(135.0),
         caloZ = cms.double(310.0),
         overlapThreshold = cms.double(0.2),
@@ -127,7 +127,7 @@ merging_params = {
     )   
 }
 
-merging_params['ECALHCAL'] = cms.PSet(
+merging_params['ECALBARRELHCAL'] = cms.PSet(
     caloR = merging_params['ECALBARREL'].caloR,
     caloZ = merging_params['ECALBARREL'].caloZ,
 
@@ -136,6 +136,19 @@ merging_params['ECALHCAL'] = cms.PSet(
 
     simhits = cms.VInputTag(
         merging_params['ECALBARREL'].simhits +
+        merging_params['HCAL'].simhits
+    )
+)
+
+merging_params['ECALHCAL'] = cms.PSet(
+    caloR = merging_params['ECAL'].caloR,
+    caloZ = merging_params['ECAL'].caloZ,
+
+    overlapThreshold = cms.double(1.1), 
+    distanceTol = cms.double(0.0),
+
+    simhits = cms.VInputTag(
+        merging_params['ECAL'].simhits +
         merging_params['HCAL'].simhits
     )
 )

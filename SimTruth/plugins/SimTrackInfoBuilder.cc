@@ -119,6 +119,12 @@ void SimTrackInfoBuilder::produce(edm::Event& evt, const edm::EventSetup& es) {
             trackP.vertex().Z(),
             trackP.vertex().T()
         );
+        info.momentumAtCalo = math::XYZTLorentzVectorD(
+            trackP.px(),
+            trackP.py(),
+            trackP.pz(),
+            trackP.E()
+        );
         simTrackInfos->push_back(info);
     }
 

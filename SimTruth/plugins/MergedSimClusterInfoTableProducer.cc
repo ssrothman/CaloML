@@ -41,6 +41,12 @@ public:
     std::array<std::vector<float>, NLEADERS> energies;
     std::array<std::vector<float>, NLEADERS> vtx_x, vtx_y, vtx_z, vtx_t;
     std::array<std::vector<float>, NLEADERS> calo_x, calo_y, calo_z, calo_t;
+    std::array<std::vector<int>, NLEADERS> reasons;
+
+    std::vector<float> impact_energies;
+    std::vector<float> impact_pts;
+    std::vector<float> impact_etas;
+    std::vector<float> impact_phis;
 
     size_t nrows = clusters.isValid() ? clusters->size() : 0;
 
@@ -55,7 +61,12 @@ public:
       calo_y[i].reserve(nrows);
       calo_z[i].reserve(nrows);
       calo_t[i].reserve(nrows);
+      reasons[i].reserve(nrows);
     }
+    impact_energies.reserve(nrows);
+    impact_pts.reserve(nrows);
+    impact_etas.reserve(nrows);
+    impact_phis.reserve(nrows);
 
     for (const auto& cl : *clusters) {
       nParticles.push_back(static_cast<int>(cl.pdgids.size()));
@@ -63,7 +74,8 @@ public:
       for (unsigned i = 0; i < NLEADERS; ++i) {
         if (i < cl.pdgids.size()) {
           pdgids[i].push_back(cl.pdgids[i]);
-          energies[i].push_back((i < cl.energies.size()) ? cl.energies[i] : 0.f);
+          reasons[i].push_back(cl.reasons[i]);
+          energies[i].push_back(cl.simTrackInfos[i].momentumAtCalo.E());
           vtx_x[i].push_back(cl.simTrackInfos[i].vtx.x());
           vtx_y[i].push_back(cl.simTrackInfos[i].vtx.y());
           vtx_z[i].push_back(cl.simTrackInfos[i].vtx.z());
@@ -73,6 +85,7 @@ public:
           calo_z[i].push_back(cl.simTrackInfos[i].caloImpact.z());
           calo_t[i].push_back(cl.simTrackInfos[i].caloImpact.t());
         } else {
+          reasons[i].push_back(-1);
           pdgids[i].push_back(0);
           energies[i].push_back(0.f);
           vtx_x[i].push_back(0.f);
@@ -85,6 +98,15 @@ public:
           calo_t[i].push_back(0.f);
         }
       }
+
+      math::XYZTLorentzVector impactMomentum;
+      for (const auto& info : cl.simTrackInfos) {
+        impactMomentum += info.momentumAtCalo;
+      }
+      impact_energies.push_back(impactMomentum.E());
+      impact_pts.push_back(impactMomentum.Pt());
+      impact_etas.push_back(impactMomentum.Eta());
+      impact_phis.push_back(impactMomentum.Phi());
     }
 
     auto tab = std::make_unique<nanoaod::FlatTable>(nrows, name_, false, extension_);
@@ -117,7 +139,15 @@ public:
       tab->addColumn<float>(calo_y_name, calo_y[i], "y coordinate of calo impact of leading particle (rank " + std::to_string(i) + ")");
       tab->addColumn<float>(calo_z_name, calo_z[i], "z coordinate of calo impact of leading particle (rank " + std::to_string(i) + ")");
       tab->addColumn<float>(calo_t_name, calo_t[i], "t coordinate of calo impact of leading particle (rank " + std::to_string(i) + ")");
+    
+      std::string reason_name = "reason" + std::to_string(i);
+      tab->addColumn<int>(reason_name, reasons[i], "Merge reason for leading particle (rank " + std::to_string(i) + ")"); 
     }
+
+    tab->addColumn<float>("impact_energy", impact_energies, "Total energy at calo impact summed over all contributing particles");
+    tab->addColumn<float>("impact_pt", impact_pts, "Total pt at calo impact summed over all contributing particles");
+    tab->addColumn<float>("impact_eta", impact_etas, "Eta of total momentum at calo impact summed over all contributing particles");
+    tab->addColumn<float>("impact_phi", impact_phis, "Phi of total momentum at calo impact summed over all contributing particles");
 
     iEvent.put(std::move(tab));
   }

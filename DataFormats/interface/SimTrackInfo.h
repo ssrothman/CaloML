@@ -8,6 +8,7 @@ namespace CaloML {
     struct SimTrackInfo {
         math::XYZTLorentzVectorD vtx;
         math::XYZTLorentzVectorD caloImpact;        
+        math::XYZTLorentzVectorD momentumAtCalo;
     };
 };
 

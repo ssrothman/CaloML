@@ -23,13 +23,13 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10),
+    input = cms.untracked.int32(-1),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('file:pf_only_reReco_MC_Sim.root'),
+    fileNames = cms.untracked.vstring('file:RECO_Run3_PiGun.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -81,7 +81,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string(''),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('testNanoML_Run3.root'),
+    fileName = cms.untracked.string('NANO_Run3_PiGun.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 
@@ -124,9 +124,11 @@ process = setupSimTruth(process, 'ECALHCAL', verbose=0)
 process = setupSimTruthTables(process, 'ECALHCAL')
 process = setupSimHitTables(process, 'ECALHCAL')
 
-for subdet in ['ECALBARREL', 'HBHE']: #, 'HO']:
+for subdet in ['ECAL', 'HBHE', 'HO']:
     process = setupRecHitTables(process, subdet, truth='ECALHCAL')
 
+from CaloML.SimTruth.GenParticles_cff import setupGenParticlesTables
+process = setupGenParticlesTables(process)
 # End of customisation functions
 
 
