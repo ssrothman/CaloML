@@ -169,7 +169,7 @@ process.generator.PGunParameters.MinEta = cms.double(0)
 process.generator.PGunParameters.MaxEta = cms.double(3.0)
 process.maxEvents.input = 500
 process.FEVTDEBUGoutput.fileName = 'GSD_Run3_PhotonGun.root'
-
+process.options.numberOfThreads=cms.untracked.uint32(4)
 
 # Customisation from command line
 

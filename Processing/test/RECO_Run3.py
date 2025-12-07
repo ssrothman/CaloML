@@ -113,6 +113,13 @@ associatePatAlgosToolsTask(process)
 from FWCore.Modules.logErrorHarvester_cff import customiseLogErrorHarvesterUsingOutputCommands
 process = customiseLogErrorHarvesterUsingOutputCommands(process)
 
+
+# extra customization
+process.maxEvents.input = -1
+process.source.fileNames = cms.untracked.vstring('file:GSD_Run3_TauGun.root')
+process.FEVTDEBUGoutput.fileName = 'file:RECO_Run3_TauGun.root'
+process.options.numberOfThreads=cms.untracked.uint32(4)
+
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 process = customiseEarlyDelete(process)
