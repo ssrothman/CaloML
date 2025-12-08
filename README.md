@@ -29,9 +29,10 @@ Truth definitions are easy to create for different subdetectors, or multiple sim
     - [ECAL setup](#ecal-setup)
   - [3.2 Build merged sim truth](#32-build-merged-sim-truth)
   - [3.3 Write flat NanoAOD tables](#33-write-flat-nanoaod-tables)
-- [4. MC generation](#4-mc-generation)
+- [4. Config generation](#4-config-generation)
   - [4.1 GEN-SIM-DIGI](#41-gen-sim-digi)
   - [4.2 RECO](#42-reco)
+  - [4.3 NANO](#43-nano)
 - [5. Technical details](#5-technical-details)
 
 
@@ -215,7 +216,7 @@ For reco-level quantities there is:
 
 The reco-level processmodifier takes two arguments to allow for the possibilty of running multiple truth definitions at once (eg for testing, comparison). The `truth` argument is the is name of the "subdet" used for building the truth definition. The `subdet` argument is the name of the subdetector that you want to dump RecHits for. This is also a lookup into a configuration dictionary in [common_cff.py](https://github.com/ssrothman/CaloML/blob/CMSSW_15_0_X/SimTruth/python/common_cff.py) which defines the RecHit sources and the names of the correct templated produces for that datatype. Note that because the HCAL uses different datatypes for HBHE, HF, and HO, this list of valid `subdet`'s at RecHit level is different from the list of valid `subdet`'s at sim level. 
 
-## 4. MC generation
+## 4. Config generation
 
 The NANO configurations from this repo are compatible with edm files generated in any way, so long as they have the necessary branches. That said, I have also set up a recipe for generating MC from scratch. There are two steps:
 
@@ -288,6 +289,49 @@ cmsDriver.py step4 \
     --no_exec \
     --python_filename=CaloML/Processing/test/RECO_Run4.py
 ```
+
+### 4.3 NANO
+
+This step can be run off any edm files that contain the needed information. To align with the syntax expected by `cmsDriver`, I have defined some "sequences" in CaloML/SimTruth/SimTruthSequences_cff.py. Custom sequences can be created as detailed in section 3. 
+
+Using this syntax, NANO step configs can be created with:
+
+Run 3:
+```bash
+cmsDriver.py NANO \
+    --filein RECO.root \
+    --fileout NANO.root \
+    --mc \
+    --eventcontent NANOAODSIM \
+    --datatier NANOAODSIM \
+    --step NONE \
+    --conditions auto:phase1_2024_realistic \
+    --era Run3_2024 \
+    --no_exec \
+    --python_filename=CaloML/Processing/test/NANO_Run3.py \
+    --customise CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_ECALHCAL,\
+CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables
+```
+
+Run 4:
+```bash
+cmsDriver.py NANO \
+    --filein RECO.root \
+    --fileout NANO.root \
+    --mc \
+    --eventcontent NANOAODSIM \
+    --datatier NANOAODSIM \
+    --step NONE \
+    --geometry ExtendedRun4D110 \
+    --conditions auto:phase2_realistic_T33 \
+    --era Phase2C17I13M9 \
+    --no_exec \
+    --python_filename=CaloML/Processing/test/NANO_Run4.py \
+    --customise CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_HGCAL,\
+CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_L1THGCAL,\
+CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables
+```
+
 
 ## 5. Technical details
 
