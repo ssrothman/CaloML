@@ -292,7 +292,7 @@ cmsDriver.py step4 \
 
 ### 4.3 NANO
 
-This step can be run off any edm files that contain the needed information. To align with the syntax expected by `cmsDriver`, I have defined some "sequences" in CaloML/SimTruth/SimTruthSequences_cff.py. Custom sequences can be created as detailed in section 3. 
+This step can be run off any edm files that contain the needed information. To align with the syntax expected by `cmsDriver`, I have defined some "sequences" in CaloML/Processing/SimTruthSequences_cff.py. Custom sequences can be created as detailed in section 3. 
 
 Using this syntax, NANO step configs can be created with:
 
