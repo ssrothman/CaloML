@@ -2,17 +2,23 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: NANO --filein GSD.root --fileout RECO.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --step NONE --conditions auto:phase1_2024_realistic --era Run3_2024 --no_exec --python_filename=CaloML/Processing/test/NANO_Run3.py --customise CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_ECALHCAL,CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables
+# with command line options: NANO --filein RECO.root --fileout NANO.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --step NANO --conditions auto:phase1_2024_realistic --era Run3_2024 --no_exec --python_filename=CaloML/Processing/test/NANO_Run3.py --customise CaloML/Processing/SimTruthSequences_cff.SimTruthSequence_ECALHCAL,CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables --customise_commands=process.schedule.remove(process.nanoAOD_step)
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_2024_cff import Run3_2024
 
-process = cms.Process('NONE',Run3_2024)
+process = cms.Process('NANO',Run3_2024)
 
 # import of standard configurations
+process.load('Configuration.StandardSequences.Services_cff')
+process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
+process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.StandardSequences.MagneticField_cff')
+process.load('PhysicsTools.NanoAOD.nano_cff')
+process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
@@ -22,7 +28,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('GSD.root'),
+    fileNames = cms.untracked.vstring('RECO.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -74,7 +80,7 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAODSIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('RECO.root'),
+    fileName = cms.untracked.string('NANO.root'),
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 
@@ -85,19 +91,21 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2024_realistic', '')
 
 # Path and EndPath definitions
+process.nanoAOD_step = cms.Path(process.nanoSequenceMC)
+process.endjob_step = cms.EndPath(process.endOfProcess)
 process.NANOAODSIMoutput_step = cms.EndPath(process.NANOAODSIMoutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.NANOAODSIMoutput_step)
+process.schedule = cms.Schedule(process.nanoAOD_step,process.endjob_step,process.NANOAODSIMoutput_step)
 from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 # customisation of the process.
 
-# Automatic addition of the customisation function from CaloML.SimTruth.SimTruthSequences_cff
-from CaloML.SimTruth.SimTruthSequences_cff import SimTruthSequence_ECALHCAL 
+# Automatic addition of the customisation function from CaloML.Processing.SimTruthSequences_cff
+from CaloML.Processing.SimTruthSequences_cff import SimTruthSequence_ECALHCAL 
 
-#call to customisation function SimTruthSequence_ECALHCAL imported from CaloML.SimTruth.SimTruthSequences_cff
+#call to customisation function SimTruthSequence_ECALHCAL imported from CaloML.Processing.SimTruthSequences_cff
 process = SimTruthSequence_ECALHCAL(process)
 
 # Automatic addition of the customisation function from CaloML.SimTruth.GenParticles_cff
@@ -106,10 +114,19 @@ from CaloML.SimTruth.GenParticles_cff import setupGenParticlesTables
 #call to customisation function setupGenParticlesTables imported from CaloML.SimTruth.GenParticles_cff
 process = setupGenParticlesTables(process)
 
+# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nano_cff
+from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeCommon 
+
+#call to customisation function nanoAOD_customizeCommon imported from PhysicsTools.NanoAOD.nano_cff
+process = nanoAOD_customizeCommon(process)
+
 # End of customisation functions
 
 
 # Customisation from command line
+
+process.schedule.remove(process.nanoAOD_step) 
+process.source.delayReadingEventProducts = cms.untracked.bool(False)
 
 # Add early deletion of temporary data products to reduce peak memory need
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete

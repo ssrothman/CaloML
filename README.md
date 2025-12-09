@@ -304,13 +304,14 @@ cmsDriver.py NANO \
     --mc \
     --eventcontent NANOAODSIM \
     --datatier NANOAODSIM \
-    --step NONE \
+    --step NANO \
     --conditions auto:phase1_2024_realistic \
     --era Run3_2024 \
     --no_exec \
     --python_filename=CaloML/Processing/test/NANO_Run3.py \
-    --customise CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_ECALHCAL,\
-CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables
+    --customise CaloML/Processing/SimTruthSequences_cff.SimTruthSequence_ECALHCAL,\
+CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables \
+    --customise_commands="process.schedule.remove(process.nanoAOD_step)"
 ```
 
 Run 4:
@@ -321,15 +322,17 @@ cmsDriver.py NANO \
     --mc \
     --eventcontent NANOAODSIM \
     --datatier NANOAODSIM \
-    --step NONE \
+    --step NANO \
     --geometry ExtendedRun4D110 \
     --conditions auto:phase2_realistic_T33 \
     --era Phase2C17I13M9 \
     --no_exec \
     --python_filename=CaloML/Processing/test/NANO_Run4.py \
-    --customise CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_HGCAL,\
-CaloML/SimTruth/SimTruthSequences_cff.SimTruthSequence_L1THGCAL,\
-CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables
+    --customise CaloML/Processing/SimTruthSequences_cff.SimTruthSequence_HGCAL,\
+CaloML/Processing/SimTruthSequences_cff.SimTruthSequence_L1THGCAL,\
+CaloML/Processing/HGCalTPG_cff.setupHGCalTPG,\
+CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables \
+    --customise_commands="process.schedule.remove(process.nanoAOD_step)"
 ```
 
 

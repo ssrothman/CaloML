@@ -30,12 +30,9 @@ process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.Geometry.GeometryExtendedRun4D110Reco_cff')
 process.load('Configuration.Geometry.GeometryExtendedRun4D110_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('DPGAnalysis.HGCalNanoAOD.nanoHGCML_cff')
 process.load('L1Trigger.L1THGCal.l1tHGCalTriggerGeometryESProducer_cfi')
 #added
 # Fix for ProductNotFound error with FlatEtaRangeGunProducer
-process.tpClusterProducer.pixelSimLinkSrc = cms.InputTag("simSiPixelDigis", "Pixel")
-process.tpClusterProducer.phase2OTSimLinkSrc = cms.InputTag("simSiPixelDigis", "Tracker")
 #added
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
@@ -171,12 +168,9 @@ from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
 associatePatAlgosToolsTask(process)
 
 # customisation of the process.
-from DPGAnalysis.HGCalNanoAOD.nanoHGCML_cff import customizeReco,customizeMergedSimClusters
 # Uncomment if you didn't schedule SimClusters/CaloParticles
 # process = customizeNoMergedCaloTruth(process)
 # merged simclusters (turn off if you aren't running through PEPR)
-process = customizeMergedSimClusters(process)
-process = customizeReco(process)
 
 from CaloML.CaloHits.SimHits_cff import setupL1THGCalSimHits, setupHcalSimHits, setupCalibratedHGCalSimHits
 from CaloML.CaloHits.RecHits_cff import setupRecHitTables
