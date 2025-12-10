@@ -9,16 +9,18 @@ parser.add_argument('--truth', type=str, default='ECALHCAL',
                     help='Name of truth collection to use (default: ECALHCAL)')
 parser.add_argument('--properties', type=str, nargs='+', 
                     default=[
-                        'MAG(vtx0)',
-                        'MAG(calo0)',
-                        'MAG(calo0-vtx0)'
-                        'AKnum',
-                        'frac0',
-                        'simEnergy',  
-                        'nSimHits', 'nParticles', 
-                        'track_pdgId', 
-                        'track_threeCharge',
-                        'track_pt', 'track_eta', 'track_phi', 'track_mass', 'impact_energy', 
+                        'RES(simE,genE)'
+                        #'MAG(vtx0)',
+                        #'MAG(calo0)',
+                        #'MAG(calo0-vtx0)'
+                        #'AKnum',
+                        #'frac0',
+                        #'simEnergy',  
+                        #'nSimHits', 'nParticles', 
+                        #'track_pdgId', 
+                        #'track_threeCharge',
+                        #'track_pt', 'track_eta', 'track_phi', 'track_mass', 
+                        #'impact_energy', 
                     ], 
                     help='Hit properties to plot')
 args = parser.parse_args()
@@ -72,6 +74,11 @@ for prop in args.properties:
             smu.Variable('%s.vtx_x0' % collection),
             smu.Variable('%s.vtx_y0' % collection),
             smu.Variable('%s.vtx_z0' % collection),
+        )
+    elif prop == 'RES(simE,genE)':
+        var = smu.RelativeResolutionVariable(
+            smu.Variable("%s.impact_energy" % collection),
+            smu.Variable("%s.simEnergy" % collection)
         )
     else:
         var = smu.Variable('%s.%s' % (collection, prop))

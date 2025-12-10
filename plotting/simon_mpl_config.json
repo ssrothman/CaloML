@@ -8,7 +8,7 @@
         "*simEnergy" : "$E_{sim}$ [GeV]",
         "*track_energy" : "$E_{gen}$ [GeV]",
         "*pdgId" : "pdgId",
-        "*.simEnergy_minus_*.impact_energy_over_*.impact_energy" : "$(E_{sim} - E_{gen}) / E_{sim}$",
+        "*.simEnergy_minus_*.impact_energy_over_*.impact_energy" : "$(E_{sim} - E_{gen}) / E_{gen}$",
         "*.energy_minus_*.simenergy_over_*.simenergy" : "$(E_{reco} - E_{sim}) / E_{sim}$",
         "*.energy" : "$E_{reco}$ [GeV]",
         "*.simenergy" : "$E_{sim}$ [GeV]",
