@@ -1,0 +1,3 @@
+[submodule "plotting/simon_mpl_util"]
+	path = plotting/simon_mpl_util
+	url = git@github.com:ssrothman/simon_mpl_util.git

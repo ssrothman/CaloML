@@ -1,3 +1,5 @@
 *.pyc
 .github/copilot-instructions.md
 Processing/test/*.py
+*.png
+*.pdf
