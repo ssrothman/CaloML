@@ -25,7 +25,12 @@
         "*.track_pt" : "Geant Track $p_{T}$ [GeV]",
         "*.track_eta" : "Geant Track $\\eta$",
         "*.track_phi" : "Geant Track $\\phi$",
-        "*.track_mass" : "Geant Track $m$ [GeV]"
+        "*.track_mass" : "Geant Track $m$ [GeV]",
+        "MergedSimCluster*.energy0_over_MergedSimCluster*.impact_energy" : "Energy fraction due to leading Geant track",
+        "N(MergedSimCluster*)" : "Number of SimClusters per event",
+        "Distance3D(MergedSimCluster*.vtx_x0_MergedSimCluster*.vtx_y0_MergedSimCluster*.vtx_z0 - GenVtx.x_GenVtx.y_GenVtx.z)" : "Distance from IP to Geant track origin [cm]",
+        "Distance3D(MergedSimCluster*.calo_x0_MergedSimCluster*.calo_y0_MergedSimCluster*.calo_z0 - GenVtx.x_GenVtx.y_GenVtx.z)" : "Distance from IP to Geant track impact on calorimeter face[cm]",
+        "Distance3D(MergedSimCluster*.calo_x0_MergedSimCluster*.calo_y0_MergedSimCluster*.calo_z0 - MergedSimCluster*.vtx_x0_MergedSimCluster*.vtx_y0_MergedSimCluster*.vtx_z0)" : "Distance from Geant track origin to impact on calorimeter face [cm]"
     },
     "figsize": [12, 10],
     "cms_label" : "Work in Progress"
