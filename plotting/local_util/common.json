@@ -1,0 +1,11 @@
+{
+    "subdet_to_det" : {
+        "EB" : ["ECAL", 1],
+        "EE" : ["ECAL", 2],
+        "ES" : ["ECAL", 3],
+        "HB" : ["HBHE", 1],
+        "HE" : ["HBHE", 2],
+        "HO" : ["HO", 3],
+        "HF" : ["HF", 4]
+    }
+}
