@@ -60,10 +60,10 @@ def setupSimHitTables(process, subdet):
         valid_options = "', '".join(merging_params.keys())
         raise ValueError(f"subdet must be one of '{valid_options}'")
 
-    if subdet == 'HGCAL':
+    if subdet.startswith('HGCAL'):
         position_producer = 'HGCalSimHitPositionTableProducer'
         props_producer = 'HGCalSimHitPropertiesTableProducer'
-    elif subdet == 'L1THGCAL':
+    elif subdet.startswith('L1THGCAL'):
         position_producer = 'L1THGCalSimHitPositionTableProducer'
         props_producer = 'HGCalSimHitPropertiesTableProducer' #HGCal properties producer is same for L1T and offline
     else:
