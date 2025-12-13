@@ -13,12 +13,14 @@ parser.add_argument('--add_simtrack_vertices', action='store_true',
                     help='Whether to add simtrack vertex points to the plots')
 parser.add_argument('--add_simtrack_impacts', action='store_true',
                     help='Whether to add simtrack impact points to the plots')
+parser.add_argument("--nevts", type=int, default=None,
+                    help="Number of events to use (default: all events)")
 args = parser.parse_args()
 
 import simon_mpl_util as smu
 from local_util.naming import get_subdet_collection_cut, get_simcluster_collection_name
 
-ds = smu.NanoEventsDataset(args.input+":Events")
+ds = smu.NanoEventsDataset(args.input+":Events", entry_stop=args.nevts)
 print("Loaded dataset with %d events" % ds.num_rows)
 
 collections = []

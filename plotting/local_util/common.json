@@ -6,7 +6,13 @@
         "HB" : ["HBHE", 1],
         "HE" : ["HBHE", 2],
         "HO" : ["HO", 3],
-        "HF" : ["HF", 4]
+        "HF" : ["HF", 4],
+        "HGCalEE" : ["HGCAL", 8],
+        "HGCalHSi" : ["HGCAL", 9],
+        "HGCalHSc" : ["HGCAL", 10],
+        "L1THGCalEE" : ["L1THGCAL", 1],
+        "L1THGCalHSi" : ["L1THGCAL", 2],
+        "L1THGCalHSc" : ["L1THGCAL", 10]
     },
     "pdgid_label_lookup" : {
             "11": "$e^-$",
@@ -45,6 +51,5 @@
             "221": "$\\eta$",
             "331": "$\\eta'$",
             "1000010020": "pn"
-
     }
 }
