@@ -63,7 +63,7 @@ def plot_an_event(filepath, ievt,
 
         clusterselections.append(smu.EqualsCut('cluster0', i))
         pid = str(clus_pdgid[i])
-        pid_name = common_names['pdgid_label_lookup'].get(pid, 'unknown')
+        pid_name = common_names['pdgid_label_lookup'].get(pid, pid)
         clusterlabels.append(f'{pid_name}, pT={clus_pt[i]:.1f} GeV')
 
     cuts = []
