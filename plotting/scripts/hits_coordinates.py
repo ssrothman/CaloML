@@ -52,25 +52,25 @@ for props in [[vX, vY], [vY, vZ], [vX, vZ]]:
     varY = []
     for collection in collections:
         varX.append(
-            smu.Variable('%s.%s' % (collection, props[0]))
+            smu.BasicVariable('%s.%s' % (collection, props[0]))
         )
         varY.append(
-            smu.Variable('%s.%s' % (collection, props[1]))
+            smu.BasicVariable('%s.%s' % (collection, props[1]))
         )
 
     if args.add_simtrack_vertices:
         varX.append(
-            smu.Variable('%s.vtx_%s0' % (simcluster_collection, props[0]))
+            smu.BasicVariable('%s.vtx_%s0' % (simcluster_collection, props[0]))
         )
         varY.append(
-            smu.Variable('%s.vtx_%s0' % (simcluster_collection, props[1]))
+            smu.BasicVariable('%s.vtx_%s0' % (simcluster_collection, props[1]))
         )
     if args.add_simtrack_impacts:
         varX.append(
-            smu.Variable('%s.calo_%s0' % (simcluster_collection, props[0]))
+            smu.BasicVariable('%s.calo_%s0' % (simcluster_collection, props[0]))
         )
         varY.append(
-            smu.Variable('%s.calo_%s0' % (simcluster_collection, props[1]))
+            smu.BasicVariable('%s.calo_%s0' % (simcluster_collection, props[1]))
         )
 
     output_path = '%s_%s' % (args.output_prefix, ''.join(props))

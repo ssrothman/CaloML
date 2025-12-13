@@ -72,11 +72,11 @@ for prop in args.properties:
     for collection in collections:
         if prop == 'RES(genE,recE)':
             var = smu.RelativeResolutionVariable(
-                smu.Variable("%s.simenergy" % collection),
-                smu.Variable("%s.energy" % collection)
+                smu.BasicVariable("%s.simenergy" % collection),
+                smu.BasicVariable("%s.energy" % collection)
             )
         else:
-            var = smu.Variable('%s.%s' % (collection, prop))
+            var = smu.BasicVariable('%s.%s' % (collection, prop))
 
         variables.append(var)
     

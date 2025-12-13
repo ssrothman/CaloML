@@ -42,46 +42,46 @@ label = None
 for prop in args.properties:
     if prop == 'frac0':
         var = smu.RatioVariable(
-            smu.Variable('%s.energy0' % collection),
-            smu.Variable('%s.impact_energy' % collection)
+            smu.BasicVariable('%s.energy0' % collection),
+            smu.BasicVariable('%s.impact_energy' % collection)
         )
     elif prop == 'AKnum':
         var = smu.AkNumVariable('%s' % collection)
         print(var.key)
     elif prop == 'MAG(vtx0)':
         var = smu.Distance3dVariable(
-            smu.Variable('%s.vtx_x0' % collection),
-            smu.Variable('%s.vtx_y0' % collection),
-            smu.Variable('%s.vtx_z0' % collection),
-            smu.Variable("GenVtx.x"),
-            smu.Variable("GenVtx.y"),
-            smu.Variable("GenVtx.z"),
+            smu.BasicVariable('%s.vtx_x0' % collection),
+            smu.BasicVariable('%s.vtx_y0' % collection),
+            smu.BasicVariable('%s.vtx_z0' % collection),
+            smu.BasicVariable("GenVtx.x"),
+            smu.BasicVariable("GenVtx.y"),
+            smu.BasicVariable("GenVtx.z"),
         )
     elif prop == 'MAG(calo0)':
         var = smu.Distance3dVariable(
-            smu.Variable('%s.calo_x0' % collection),
-            smu.Variable('%s.calo_y0' % collection),
-            smu.Variable('%s.calo_z0' % collection),
-            smu.Variable("GenVtx.x"),
-            smu.Variable("GenVtx.y"),
-            smu.Variable("GenVtx.z"),
+            smu.BasicVariable('%s.calo_x0' % collection),
+            smu.BasicVariable('%s.calo_y0' % collection),
+            smu.BasicVariable('%s.calo_z0' % collection),
+            smu.BasicVariable("GenVtx.x"),
+            smu.BasicVariable("GenVtx.y"),
+            smu.BasicVariable("GenVtx.z"),
         )
     elif prop == 'MAG(calo0-vtx0)':
         var = smu.Distance3dVariable(
-            smu.Variable('%s.calo_x0' % collection),
-            smu.Variable('%s.calo_y0' % collection),
-            smu.Variable('%s.calo_z0' % collection),
-            smu.Variable('%s.vtx_x0' % collection),
-            smu.Variable('%s.vtx_y0' % collection),
-            smu.Variable('%s.vtx_z0' % collection),
+            smu.BasicVariable('%s.calo_x0' % collection),
+            smu.BasicVariable('%s.calo_y0' % collection),
+            smu.BasicVariable('%s.calo_z0' % collection),
+            smu.BasicVariable('%s.vtx_x0' % collection),
+            smu.BasicVariable('%s.vtx_y0' % collection),
+            smu.BasicVariable('%s.vtx_z0' % collection),
         )
     elif prop == 'RES(simE,genE)':
         var = smu.RelativeResolutionVariable(
-            smu.Variable("%s.impact_energy" % collection),
-            smu.Variable("%s.simEnergy" % collection)
+            smu.BasicVariable("%s.impact_energy" % collection),
+            smu.BasicVariable("%s.simEnergy" % collection)
         )
     else:
-        var = smu.Variable('%s.%s' % (collection, prop))
+        var = smu.BasicVariable('%s.%s' % (collection, prop))
     
     print(var.key)
 
