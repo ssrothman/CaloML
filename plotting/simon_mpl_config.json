@@ -25,6 +25,7 @@
         "x" : "x [cm]",
         "y" : "y [cm]",
         "z" : "z [cm]",
+        "depth" : "HCAL layer",
         "RecHit*.frac0" : "Energy fraction due to leading SimCluster",
         "RecHit*.nClusters" : "Number of matched SimClusters",
         "MergedSimCluster*.nSimHits" : "Number of SimHits in SimCluster",
@@ -33,6 +34,7 @@
         "simEnergy_minus_impact_energy_over_impact_energy" : "$(E_{sim} - E_{gen}) / E_{gen}$",
         "energy_minus_simenergy_over_simenergy" : "$(E_{reco} - E_{sim}) / E_{sim}$",
         "MergedSimCluster*.energy0_over_MergedSimCluster*.impact_energy" : "Energy fraction due to leading Geant track",
+        "sqrt(x^2 + y^2)" : "r [cm]",
         "Distance3D(MergedSimCluster*.vtx_x0_MergedSimCluster*.vtx_y0_MergedSimCluster*.vtx_z0 - GenVtx.x_GenVtx.y_GenVtx.z)" : "Distance from IP to Geant track origin [cm]",
         "Distance3D(MergedSimCluster*.calo_x0_MergedSimCluster*.calo_y0_MergedSimCluster*.calo_z0 - GenVtx.x_GenVtx.y_GenVtx.z)" : "Distance from IP to Geant track impact on calorimeter face[cm]",
         "Distance3D(MergedSimCluster*.calo_x0_MergedSimCluster*.calo_y0_MergedSimCluster*.calo_z0 - MergedSimCluster*.vtx_x0_MergedSimCluster*.vtx_y0_MergedSimCluster*.vtx_z0)" : "Distance from Geant track origin to impact on calorimeter face [cm]"
