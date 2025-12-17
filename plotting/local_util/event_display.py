@@ -7,7 +7,7 @@ def plot_an_event(filepath, ievt,
                   hits_cut=smu.GreaterThanCut('energy', 0.1), 
                   clusters_cut=smu.GreaterThanCut('impact_eta', 0), 
                   genpart_cut = smu.GreaterThanCut('eta', 0),
-                  mode = 'etaphi', #options are ['etaphi', 'xyz', 'barrellayers', 'endcaplayers']
+                  mode = 'etaphi', #options are ['etaphi', 'xyz']
                   show_genpart = True,
                   show_noise=True, 
                   savefig=None):
