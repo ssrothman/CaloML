@@ -3,6 +3,8 @@
         "pt": "$p_{T}$ [GeV]",
         "eta": "$\\eta$",
         "phi": "$\\phi$",
+        "ETA(x_y_z)" : "$\\eta$",
+        "PHI(x_y_z)" : "$\\phi$",
         "mass": "$m$ [GeV]",
         "time" : "Time [ns(?)]",
         "simEnergy" : "$E_{sim}$ [GeV]",

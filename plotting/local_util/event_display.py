@@ -4,7 +4,7 @@ import numpy as np
 
 def plot_an_event(filepath, ievt, 
                   subdets, truth, 
-                  hits_cut=smu.NoCut(), 
+                  hits_cut=smu.GreaterThanCut('energy', 0.1), 
                   clusters_cut=smu.GreaterThanCut('impact_eta', 0), 
                   genpart_cut = smu.GreaterThanCut('eta', 0),
                   show_noise=True, 
@@ -34,9 +34,15 @@ def plot_an_event(filepath, ievt,
     Y = smu.BasicVariable('y')
     Z = smu.BasicVariable('z')
 
+    Eta = smu.EtaFromXYZVariable(X, Y, Z)
+    Phi = smu.PhiFromXYZVariable(X, Y, Z)
+
     varX = smu.ConcatVariable.build_for_collections(X, rechit_collections)
     varY = smu.ConcatVariable.build_for_collections(Y, rechit_collections)
     varZ = smu.ConcatVariable.build_for_collections(Z, rechit_collections)
+
+    varEta = smu.ConcatVariable.build_for_collections(Eta, rechit_collections)
+    varPhi = smu.ConcatVariable.build_for_collections(Phi, rechit_collections)
 
     clusterselections = []
     clusterlabels = []
@@ -64,7 +70,7 @@ def plot_an_event(filepath, ievt,
         clusterselections.append(smu.EqualsCut('cluster0', i))
         pid = str(clus_pdgid[i])
         pid_name = common_names['pdgid_label_lookup'].get(pid, pid)
-        clusterlabels.append(f'{pid_name}, pT={clus_pt[i]:.1f} GeV')
+        clusterlabels.append(f'Sim {pid_name}, pT={clus_pt[i]:.1f} GeV')
 
     cuts = []
     for clustersel in clusterselections:
@@ -84,6 +90,10 @@ def plot_an_event(filepath, ievt,
     genpart_pdgid = smu.BasicVariable('pdgId', collection_name=genpart_collection).evaluate(dataset)[0]
 
     genpart_lines_xy = []
+    genpart_lines_xz = []
+    genpart_lines_yz = []
+
+    genpart_points = []
 
     for i in range(nGenPart):
         if not genpart_mask[i]:
@@ -105,29 +115,77 @@ def plot_an_event(filepath, ievt,
         y_end = end_r * np.sin(theta) * np.sin(phi)
         z_end = end_r * np.cos(theta)
 
-        #genpart_xs.append([x_start, x_end])
-        #genpart_ys.append([y_start, y_end])
-        #genpart_zs.append([z_start, z_end])
-
         pid = str(genpart_pdgid[i])
         pid_name = common_names['pdgid_label_lookup'].get(pid, 'unknown')
+        genlabel = f'Gen {pid_name}, pt={pt:.1f} GeV'
 
         genpart_lines_xy.append(
             smu.LineSpec([x_start, x_end], [y_start, y_end], 
                          c='k', linestyle='--',
-                         label=f'Gen: {pid_name}, pt={pt:.1f} GeV')
+                         label=genlabel)
+        )
+        genpart_lines_xz.append(
+            smu.LineSpec([x_start, x_end], [z_start, z_end], 
+                         c='k', linestyle='--',
+                         label=genlabel)
+        )
+        genpart_lines_yz.append(
+            smu.LineSpec([y_start, y_end], [z_start, z_end], 
+                         c='k', linestyle='--',
+                         label=genlabel)
+        )
+        genpart_points.append(
+            smu.PointSpec([eta], [phi],
+                          c='k', marker='*',
+                          s=200, label=genlabel)
         )
 
-    IP = smu.PointSpec([0], [0], c='grey', marker='*', s=100, label='IP')
+    IP = smu.PointSpec([0], [0], c='k', marker='*', s=100, label='IP')
 
+    smu.scatter_2d(
+        varEta, varPhi,
+        cuts, dataset,
+        labels_=clusterlabels,
+        ensure_square_aspect=True,
+        notext = False,
+        ps = 10.0,
+        output_path=savefig+"_etaphi",
+        legend_loc=(1.05, 0.9, 'upper left'),
+        add_stuff = genpart_points
+    )
+    
     smu.scatter_2d(
         varX, varY, 
         cuts, dataset,
         labels_=clusterlabels,
         ensure_square_aspect=True,
-        notext = True,
+        notext = False,
         ps = 10.0,
-        output_path=savefig,
+        output_path=savefig+"_xy",
         legend_loc=(1.05, 0.9, 'upper left'),
         add_stuff=genpart_lines_xy + [IP]
     )
+    smu.scatter_2d(
+        varX, varZ, 
+        cuts, dataset,
+        labels_=clusterlabels,
+        ensure_square_aspect=True,
+        notext = False,
+        ps = 10.0,
+        output_path=savefig+"_xz",
+        legend_loc=(1.05, 0.9, 'upper left'),
+        add_stuff=genpart_lines_xz + [IP]
+    )
+    smu.scatter_2d(
+        varY, varZ, 
+        cuts, dataset,
+        labels_=clusterlabels,
+        ensure_square_aspect=True,
+        notext = False,
+        ps = 10.0,
+        output_path=savefig+"_yz",
+        legend_loc=(1.05, 0.9, 'upper left'),
+        add_stuff=genpart_lines_yz + [IP]
+    )
+
+
