@@ -3,3 +3,4 @@
 Processing/test/*.py
 *.png
 *.pdf
+*.root
