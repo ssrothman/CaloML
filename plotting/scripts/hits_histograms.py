@@ -11,9 +11,9 @@ parser.add_argument('--rechits', type=str, nargs='+', default=['EB', 'EE', 'ES',
                     help='Rechit collections to use (default: [EB, EE, ES, HB, HE, HO])')
 parser.add_argument('--properties', type=str, nargs='+', 
                     default=[
-                        #'RES(genE,recE)'
-                        #'energy', 'simenergy', 'time', 
-                        #'nClusters', 'frac0'
+                        'RES(genE,recE)'
+                        'energy', 'simenergy', 'time', 
+                        'nClusters', 'frac0'
                     ], 
                     help='Hit properties to plot (default: [energy, simenergy, time, nClusters, frac0])')
 
@@ -21,16 +21,24 @@ parser.add_argument('--minenergy', type=float, default=None)
 parser.add_argument ('--maxenergy', type=float, default=None)
 parser.add_argument('--mineta', type=float, default=None)
 parser.add_argument('--maxeta', type=float, default=None)
-
+parser.add_argument('--nevts', type=int, default=-1)
 parser.add_argument('--force-range', type=float, nargs=2, default=None,
                     help='Force histogram range to given min and max values')
 
 args = parser.parse_args()
 
-import simon_mpl_util as smu
+import simonplot as smp
 from local_util.naming import get_subdet_collection_cut
+import os
 
-ds = smu.NanoEventsDataset(args.input+":Events")
+ds = smp.plottables.NanoEventsDataset(
+    fname = args.input+":Events",
+    #entry_stop=args.nevts,
+    color = 'k',
+    key = 'events',
+    label = ''
+)
+ds.set_xsec(1)
 print("Loaded dataset with %d events" % ds.num_rows)
 
 collections = []
@@ -45,25 +53,25 @@ for subdet in args.rechits:
 
     if args.minenergy is not None and args.maxenergy is None:
         allcuts.append(
-            smu.GreaterThanCut("%s.simenergy" % collection, args.minenergy)
+            smp.cut.GreaterThanCut("%s.simenergy" % collection, args.minenergy)
         )
     elif args.maxenergy is not None and args.minenergy is None:
         allcuts.append(
-            smu.LessThanCut("%s.simenergy" % collection, args.maxenergy)
+            smp.cut.LessThanCut("%s.simenergy" % collection, args.maxenergy)
         )
     elif args.minenergy is not None and args.maxenergy is not None:
         allcuts.append(
-            smu.TwoSidedCut("%s.simenergy" % collection, args.minenergy, args.maxenergy)
+            smp.cut.TwoSidedCut("%s.simenergy" % collection, args.minenergy, args.maxenergy)
         )
 
     if len(allcuts) == 1:
         cuts.append(allcuts[0])
     else:
-        cuts.append(smu.AndCuts(*allcuts))
+        cuts.append(smp.cut.AndCuts(allcuts))
 
     labels.append(subdet)
 
-binning = smu.AutoBinning()
+binning = smp.binning.AutoBinning()
 if args.force_range is not None:
     binning.force_range(*args.force_range)
 
@@ -71,22 +79,29 @@ for prop in args.properties:
     variables = []
     for collection in collections:
         if prop == 'RES(genE,recE)':
-            var = smu.RelativeResolutionVariable(
-                smu.BasicVariable("%s.simenergy" % collection),
-                smu.BasicVariable("%s.energy" % collection)
+            var = smp.variable.RelativeResolutionVariable(
+                smp.variable.BasicVariable("%s.simenergy" % collection),
+                smp.variable.BasicVariable("%s.energy" % collection)
             )
         else:
-            var = smu.BasicVariable('%s.%s' % (collection, prop))
+            var = smp.variable.BasicVariable('%s.%s' % (collection, prop))
 
         variables.append(var)
     
-    smu.plot_histogram(
+
+    opath = '%s_%s' % (args.output_prefix, prop)
+    ofolder = os.path.dirname(opath)
+    oprefix = os.path.basename(opath)
+
+    smp.plot_histogram(
         variables,
         cuts,
+        smp.variable.ConstantVariable(1.0),
         ds,
         binning,
         labels,
         logy=True,
         density=True,
-        output_path='%s_%s' % (args.output_prefix, prop)
+        output_folder=ofolder,
+        output_prefix=oprefix
     )

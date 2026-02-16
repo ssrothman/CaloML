@@ -17,10 +17,18 @@ parser.add_argument("--nevts", type=int, default=None,
                     help="Number of events to use (default: all events)")
 args = parser.parse_args()
 
-import simon_mpl_util as smu
+import simonplot as smp
 from local_util.naming import get_subdet_collection_cut, get_simcluster_collection_name
 
-ds = smu.NanoEventsDataset(args.input+":Events", entry_stop=args.nevts)
+ds = smp.plottables.NanoEventsDataset(
+    fname = args.input+":Events",
+    entry_stop=args.nevts,
+    color = 'k',
+    key = 'events',
+    label = ''
+)
+ds.set_xsec(1)
+
 print("Loaded dataset with %d events" % ds.num_rows)
 
 collections = []
@@ -36,11 +44,11 @@ for subdet in args.rechits:
 simcluster_collection = get_simcluster_collection_name(args.truth)
 
 if args.add_simtrack_vertices:
-    cuts.append(smu.NoCut())
+    cuts.append(smp.cut.NoCut())
     labels.append("SimTrack Vertices")
 
 if args.add_simtrack_impacts:
-    cuts.append(smu.NoCut())
+    cuts.append(smp.cut.NoCut())
     labels.append("SimTrack Impacts")
 
 vX = 'x'
@@ -52,25 +60,25 @@ for props in [[vX, vY], [vY, vZ], [vX, vZ]]:
     varY = []
     for collection in collections:
         varX.append(
-            smu.BasicVariable('%s.%s' % (collection, props[0]))
+            smp.variable.BasicVariable('%s.%s' % (collection, props[0]))
         )
         varY.append(
-            smu.BasicVariable('%s.%s' % (collection, props[1]))
+            smp.variable.BasicVariable('%s.%s' % (collection, props[1]))
         )
 
     if args.add_simtrack_vertices:
         varX.append(
-            smu.BasicVariable('%s.vtx_%s0' % (simcluster_collection, props[0]))
+            smp.variable.BasicVariable('%s.vtx_%s0' % (simcluster_collection, props[0]))
         )
         varY.append(
-            smu.BasicVariable('%s.vtx_%s0' % (simcluster_collection, props[1]))
+            smp.variable.BasicVariable('%s.vtx_%s0' % (simcluster_collection, props[1]))
         )
     if args.add_simtrack_impacts:
         varX.append(
-            smu.BasicVariable('%s.calo_%s0' % (simcluster_collection, props[0]))
+            smp.variable.BasicVariable('%s.calo_%s0' % (simcluster_collection, props[0]))
         )
         varY.append(
-            smu.BasicVariable('%s.calo_%s0' % (simcluster_collection, props[1]))
+            smp.variable.BasicVariable('%s.calo_%s0' % (simcluster_collection, props[1]))
         )
 
     output_path = '%s_%s' % (args.output_prefix, ''.join(props))
@@ -79,7 +87,7 @@ for props in [[vX, vY], [vY, vZ], [vX, vZ]]:
     if args.add_simtrack_impacts:
         output_path += '_with_simtrack_impacts'
 
-    smu.scatter_2d(
+    smp.scatter_2d(
         varX, varY,
         cuts,
         ds,

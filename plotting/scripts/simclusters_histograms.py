@@ -25,10 +25,18 @@ parser.add_argument('--properties', type=str, nargs='+',
                     help='Hit properties to plot')
 args = parser.parse_args()
 
-import simon_mpl_util as smu
+import simonplot as smp
 from local_util.naming import get_simcluster_collection_name
 
-ds = smu.NanoEventsDataset(args.input+":Events")
+ds = smp.plottables.NanoEventsDataset(
+    fname = args.input+":Events",
+    entry_stop=args.nevts,
+    color = 'k',
+    key = 'events',
+    label = ''
+)
+ds.set_xsec(1)
+
 print("Loaded dataset with %d events" % ds.num_rows)
 
 collections = []
@@ -36,52 +44,52 @@ cuts = []
 labels = []
 
 collection = get_simcluster_collection_name(args.truth)
-cut = smu.NoCut()
+cut = smp.cut.NoCut()
 label = None
 
 for prop in args.properties:
     if prop == 'frac0':
-        var = smu.RatioVariable(
-            smu.BasicVariable('%s.energy0' % collection),
-            smu.BasicVariable('%s.impact_energy' % collection)
+        var = smp.variable.RatioVariable(
+            smp.variable.BasicVariable('%s.energy0' % collection),
+            smp.variable.BasicVariable('%s.impact_energy' % collection)
         )
     elif prop == 'AKnum':
-        var = smu.AkNumVariable('%s' % collection)
+        var = smp.variable.AkNumVariable('%s' % collection)
         print(var.key)
     elif prop == 'MAG(vtx0)':
-        var = smu.Distance3dVariable(
-            smu.BasicVariable('%s.vtx_x0' % collection),
-            smu.BasicVariable('%s.vtx_y0' % collection),
-            smu.BasicVariable('%s.vtx_z0' % collection),
-            smu.BasicVariable("GenVtx.x"),
-            smu.BasicVariable("GenVtx.y"),
-            smu.BasicVariable("GenVtx.z"),
+        var = smp.variable.Distance3dVariable(
+            smp.variable.BasicVariable('%s.vtx_x0' % collection),
+            smp.variable.BasicVariable('%s.vtx_y0' % collection),
+            smp.variable.BasicVariable('%s.vtx_z0' % collection),
+            smp.variable.BasicVariable("GenVtx.x"),
+            smp.variable.BasicVariable("GenVtx.y"),
+            smp.variable.BasicVariable("GenVtx.z"),
         )
     elif prop == 'MAG(calo0)':
-        var = smu.Distance3dVariable(
-            smu.BasicVariable('%s.calo_x0' % collection),
-            smu.BasicVariable('%s.calo_y0' % collection),
-            smu.BasicVariable('%s.calo_z0' % collection),
-            smu.BasicVariable("GenVtx.x"),
-            smu.BasicVariable("GenVtx.y"),
-            smu.BasicVariable("GenVtx.z"),
+        var = smp.variable.Distance3dVariable(
+            smp.variable.BasicVariable('%s.calo_x0' % collection),
+            smp.variable.BasicVariable('%s.calo_y0' % collection),
+            smp.variable.BasicVariable('%s.calo_z0' % collection),
+            smp.variable.BasicVariable("GenVtx.x"),
+            smp.variable.BasicVariable("GenVtx.y"),
+            smp.variable.BasicVariable("GenVtx.z"),
         )
     elif prop == 'MAG(calo0-vtx0)':
-        var = smu.Distance3dVariable(
-            smu.BasicVariable('%s.calo_x0' % collection),
-            smu.BasicVariable('%s.calo_y0' % collection),
-            smu.BasicVariable('%s.calo_z0' % collection),
-            smu.BasicVariable('%s.vtx_x0' % collection),
-            smu.BasicVariable('%s.vtx_y0' % collection),
-            smu.BasicVariable('%s.vtx_z0' % collection),
+        var = smp.variable.Distance3dVariable(
+            smp.variable.BasicVariable('%s.calo_x0' % collection),
+            smp.variable.BasicVariable('%s.calo_y0' % collection),
+            smp.variable.BasicVariable('%s.calo_z0' % collection),
+            smp.variable.BasicVariable('%s.vtx_x0' % collection),
+            smp.variable.BasicVariable('%s.vtx_y0' % collection),
+            smp.variable.BasicVariable('%s.vtx_z0' % collection),
         )
     elif prop == 'RES(simE,genE)':
-        var = smu.RelativeResolutionVariable(
-            smu.BasicVariable("%s.impact_energy" % collection),
-            smu.BasicVariable("%s.simEnergy" % collection)
+        var = smp.variable.RelativeResolutionVariable(
+            smp.variable.BasicVariable("%s.impact_energy" % collection),
+            smp.variable.BasicVariable("%s.simEnergy" % collection)
         )
     else:
-        var = smu.BasicVariable('%s.%s' % (collection, prop))
+        var = smp.variable.BasicVariable('%s.%s' % (collection, prop))
     
     print(var.key)
 
@@ -89,16 +97,17 @@ for prop in args.properties:
         import json
         with open('local_util/common.json', 'r') as f:
             pdgid_lookup = json.load(f)['pdgid_label_lookup']
-        binning = smu.AutoIntCategoryBinning(pdgid_lookup)
+        binning = smp.binning.AutoIntCategoryBinning(pdgid_lookup)
     else:
-        binning = smu.AutoBinning()
+        binning = smp.binning.AutoBinning()
 
-    smu.plot_histogram(
+    smp.plot_histogram(
         var,
         cut,
+        smp.variable.ConstantVariable(1.0),
         ds,
         binning,
         label,
         logy=True,
-        output_path='%s_%s' % (args.output_prefix, prop)
+        output_folder='%s_%s' % (args.output_prefix, prop)
     )

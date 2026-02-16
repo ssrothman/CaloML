@@ -10,7 +10,7 @@ def get_simcluster_collection_name(truth):
     return "MergedSimCluster{}" .format(truth)
 
 def get_subdet_collection_cut(subdet, truth):
-    from simon_mpl_util.Cut import EqualsCut
+    from simonplot.cut.Cut import EqualsCut
 
     (det, index) = common_names['subdet_to_det'][subdet]
 
