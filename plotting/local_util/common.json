@@ -15,7 +15,7 @@
         "L1THGCalHSc" : ["L1THGCAL", 10]
     },
     "pdgid_label_lookup" : {
-            "0" : "unknown",
+            "0" : "??",
             "11": "$e^-$",
             "-11": "$e^+$",
             "13": "$\\mu^-$",
