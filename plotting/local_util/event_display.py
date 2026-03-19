@@ -2,10 +2,11 @@ import simonplot as smp
 from local_util.naming import get_subdet_collection_cut, get_simcluster_collection_name, common_names
 import numpy as np
 from simonpy.coordinates import eta_to_theta
+import awkward as ak
 
 def plot_an_event(filepath, ievt, 
                   subdets, truth, 
-                  hits_cut=smp.cut.GreaterThanCut('energy', 0.1), 
+                  hits_cut=smp.cut.GreaterThanCut('energy', 0.0), 
                   clusters_cut=smp.cut.GreaterThanCut('impact_eta', 0), 
                   genpart_cut = smp.cut.GreaterThanCut('eta', 0),
                   mode = 'etaphi', #options are ['etaphi', 'xyz']
@@ -117,8 +118,19 @@ def plot_an_event(filepath, ievt,
             phi = genpart_phi[i]
             theta = eta_to_theta(eta)
 
-            start_r = 0
-            end_r = 300
+            rvar = smp.variable.Magnitude3dVariable(
+                varX,
+                varY,
+                varZ
+            )
+            rvals = rvar.evaluate(
+                dataset, smp.cut.NoCut()
+            )
+            minr = ak.min(rvals)
+            maxr = ak.max(rvals)
+
+            start_r = minr * 0.5
+            end_r = maxr * 1.05
 
             x_start = start_r * np.sin(theta) * np.cos(phi)
             y_start = start_r * np.sin(theta) * np.sin(phi)
@@ -159,7 +171,7 @@ def plot_an_event(filepath, ievt,
             cuts, dataset,
             labels_=clusterlabels,
             ensure_square_aspect=True,
-            notext = False,
+            notext = True,
             ps = 10.0,
             output_path=savefig+"_etaphi",
             legend_loc=(1.05, 0.9, 'upper left'),
@@ -171,7 +183,7 @@ def plot_an_event(filepath, ievt,
             cuts, dataset,
             labels_=clusterlabels,
             ensure_square_aspect=False,
-            notext = False,
+            notext = True,
             ps = 10.0,
             output_path=savefig+"_etaR",
             legend_loc=(1.05, 0.9, 'upper left'),
@@ -183,7 +195,7 @@ def plot_an_event(filepath, ievt,
             cuts, dataset,
             labels_=clusterlabels,
             ensure_square_aspect=False,
-            notext = False,
+            notext = True,
             ps = 10.0,
             output_path=savefig+"_phiR",
             legend_loc=(1.05, 0.9, 'upper left'),
@@ -196,7 +208,7 @@ def plot_an_event(filepath, ievt,
             cuts, dataset,
             labels_=clusterlabels,
             ensure_square_aspect=True,
-            notext = False,
+            notext = True,
             ps = 10.0,
             output_path=savefig+"_xy",
             legend_loc=(1.05, 0.9, 'upper left'),
@@ -207,7 +219,7 @@ def plot_an_event(filepath, ievt,
             cuts, dataset,
             labels_=clusterlabels,
             ensure_square_aspect=True,
-            notext = False,
+            notext = True,
             ps = 10.0,
             output_path=savefig+"_xz",
             legend_loc=(1.05, 0.9, 'upper left'),
@@ -218,7 +230,7 @@ def plot_an_event(filepath, ievt,
             cuts, dataset,
             labels_=clusterlabels,
             ensure_square_aspect=True,
-            notext = False,
+            notext = True,
             ps = 10.0,
             output_path=savefig+"_yz",
             legend_loc=(1.05, 0.9, 'upper left'),

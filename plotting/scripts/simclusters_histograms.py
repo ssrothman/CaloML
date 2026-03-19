@@ -9,7 +9,7 @@ parser.add_argument('--truth', type=str, default='ECALHCAL',
                     help='Name of truth collection to use (default: ECALHCAL)')
 parser.add_argument('--properties', type=str, nargs='+', 
                     default=[
-                        'RES(simE,genE)'
+                        #'RES(simE,genE)'
                         #'MAG(vtx0)',
                         #'MAG(calo0)',
                         #'MAG(calo0-vtx0)'
@@ -30,7 +30,7 @@ from local_util.naming import get_simcluster_collection_name
 
 ds = smp.plottables.NanoEventsDataset(
     fname = args.input+":Events",
-    entry_stop=args.nevts,
+    #entry_stop=args.nevts,
     color = 'k',
     key = 'events',
     label = ''
