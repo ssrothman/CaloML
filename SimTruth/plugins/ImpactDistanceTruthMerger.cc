@@ -165,11 +165,18 @@ void ImpactDistanceTruthMerger::produce(edm::Event& evt, const edm::EventSetup& 
                 simclusterinfos[j].simTrackInfos[0]
             );
 
-            bool passR = R < distanceTol_;
-            bool passDR = dR < dRTol_;
-            bool passDEtaPhi = (dEta < dEtaTol_) && (dPhi < dPhiTol_);
+            bool pass = false;
+            if (distanceTol_ >= 0){
+                pass |= R < distanceTol_;
+            }
+            if (dRTol_ >= 0){
+                pass |= dR < dRTol_;
+            } 
+            if (dEtaTol_ >=0 && dPhiTol_ >= 0){
+                pass |= (dEta < dEtaTol_) && (dPhi < dPhiTol_);
+            }
 
-            if (passR || passDR || passDEtaPhi) {
+            if (pass) {
                 adjacencies[i].insert(j);
                 adjacencies[j].insert(i);
             }
@@ -259,10 +266,10 @@ void ImpactDistanceTruthMerger::fillDescriptions(edm::ConfigurationDescriptions&
     desc.add<std::vector<edm::InputTag>>("simhits", std::vector<edm::InputTag>());
     desc.add<double>("caloR", 300.0);
     desc.add<double>("caloZ", 300.0);
-    desc.add<double>("distanceTol", 10.0);
-    desc.add<double>("dRTol", 0.5);
-    desc.add<double>("dEtaTol", 0.2);
-    desc.add<double>("dPhiTol", 0.2);
+    desc.add<double>("distanceTol", -1);
+    desc.add<double>("dRTol", -1);
+    desc.add<double>("dEtaTol", -1);
+    desc.add<double>("dPhiTol", -1);
     desc.add<int>("verbose", 0);
     descriptions.add("impactDistanceTruthMerger", desc);
 }

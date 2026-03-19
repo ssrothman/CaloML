@@ -1,4 +1,3 @@
-// Overlap-only merger: merges SimClusters when their hit overlap fraction exceeds a threshold.
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -149,16 +148,18 @@ void HitOverlapTruthMerger::produce(edm::Event& evt, const edm::EventSetup& es) 
 
     std::vector<std::set<uint32_t>> adjacencies;
     adjacencies.resize(simclusters.size());
-    for (size_t i=0; i<simclusters.size(); ++i){
-        for(size_t j=i+1; j<simclusters.size(); ++j){
-            double overlap = computeOverlap(
-                clusterHitEnergies[i], clusterHitEnergies[j],
-                clusterDetIds[i], clusterDetIds[j]
-            );
+    if (overlapThreshold_ >= 0.0) {
+        for (size_t i=0; i<simclusters.size(); ++i){
+            for(size_t j=i+1; j<simclusters.size(); ++j){
+                double overlap = computeOverlap(
+                    clusterHitEnergies[i], clusterHitEnergies[j],
+                    clusterDetIds[i], clusterDetIds[j]
+                );
 
-            if (overlap > overlapThreshold_){
-                adjacencies[i].insert(j);
-                adjacencies[j].insert(i);
+                if (overlap > overlapThreshold_){
+                    adjacencies[i].insert(j);
+                    adjacencies[j].insert(i);
+                }
             }
         }
     }
@@ -244,7 +245,7 @@ void HitOverlapTruthMerger::fillDescriptions(edm::ConfigurationDescriptions& des
     desc.add<edm::InputTag>("simclusters", edm::InputTag(""));
     desc.add<edm::InputTag>("simclusterInfos", edm::InputTag(""));
     desc.add<std::vector<edm::InputTag>>("simhits", std::vector<edm::InputTag>());
-    desc.add<double>("overlapThreshold", 0.5);
+    desc.add<double>("overlapThreshold", -1.0);
     desc.add<int>("verbose", 0);
     descriptions.add("hitOverlapTruthMerger", desc);
 }
