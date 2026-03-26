@@ -74,8 +74,8 @@ merging_params = {
     'HGCAL' : cms.PSet(
         caloR = cms.double(136.5),
         caloZ = cms.double(318.5),
-        overlapThreshold = cms.double(0.2),
-        distanceTol = cms.double(0.1),
+        overlapThreshold = cms.double(-1),
+        distanceTol = cms.double(-1),
         simhits = cms.VInputTag(
             'CalibratedHGCalSimHits'
         )
@@ -85,8 +85,8 @@ merging_params = {
     'L1THGCAL' : cms.PSet(
         caloR = cms.double(136.5),
         caloZ = cms.double(318.5),
-        overlapThreshold = cms.double(0.2),
-        distanceTol = cms.double(0.1),
+        overlapThreshold = cms.double(-1),
+        distanceTol = cms.double(-1),
         simhits = cms.VInputTag(
             'TCSimHits'
         )
@@ -96,8 +96,8 @@ merging_params = {
     'HCAL' : cms.PSet(
         caloR = cms.double(180.6),
         caloZ = cms.double(388.8),
-        overlapThreshold = cms.double(0.2),
-        distanceTol = cms.double(0.1),
+        overlapThreshold = cms.double(-1),
+        distanceTol = cms.double(-1),
         simhits = cms.VInputTag(
             'CalibratedHcalSimHits'
         )
@@ -107,8 +107,8 @@ merging_params = {
     'ECAL' : cms.PSet(
         caloR = cms.double(135.0),
         caloZ = cms.double(310.0),
-        overlapThreshold = cms.double(0.2),
-        distanceTol = cms.double(0.1),
+        overlapThreshold = cms.double(-1),
+        distanceTol = cms.double(-1),
         simhits = cms.VInputTag(
             'g4SimHits:EcalHitsEB',
             'g4SimHits:EcalHitsEE',
@@ -119,8 +119,8 @@ merging_params = {
     'ECALBARREL' : cms.PSet(
         caloR = cms.double(135.0),
         caloZ = cms.double(310.0),
-        overlapThreshold = cms.double(0.2),
-        distanceTol = cms.double(0.1),
+        overlapThreshold = cms.double(-1),
+        distanceTol = cms.double(-1),
         simhits = cms.VInputTag(
             'g4SimHits:EcalHitsEB'
         )
@@ -144,11 +144,71 @@ merging_params['ECALHCAL'] = cms.PSet(
     caloR = merging_params['ECAL'].caloR,
     caloZ = merging_params['ECAL'].caloZ,
 
-    overlapThreshold = cms.double(1.1), 
-    distanceTol = cms.double(0.0),
+    overlapThreshold = cms.double(-1), 
+    distanceTol = cms.double(-1),
 
     simhits = cms.VInputTag(
         merging_params['ECAL'].simhits +
         merging_params['HCAL'].simhits
     )
+)
+
+merging_params['L1THGCALoverlap1'] = merging_params['L1THGCAL'].clone(
+    overlapThreshold = cms.double(0.2),
+)
+merging_params['L1THGCALoverlap2'] = merging_params['L1THGCAL'].clone(
+    overlapThreshold = cms.double(0.4),
+)
+merging_params['L1THGCALoverlap3'] = merging_params['L1THGCAL'].clone(
+    overlapThreshold = cms.double(0.6),
+)
+merging_params['L1THGCALoverlap4'] = merging_params['L1THGCAL'].clone(
+    overlapThreshold = cms.double(0.8),
+)
+
+
+merging_params['L1THGCALdistance1'] = merging_params['L1THGCAL'].clone(
+    distanceTol = cms.double(0.1)
+)
+merging_params['L1THGCALdistance2'] = merging_params['L1THGCAL'].clone(
+    distanceTol = cms.double(0.2)
+)
+merging_params['L1THGCALdistance3'] = merging_params['L1THGCAL'].clone(
+    distanceTol = cms.double(0.3)
+)
+merging_params['L1THGCALdistance4'] = merging_params['L1THGCAL'].clone(
+    distanceTol = cms.double(0.4)
+)
+
+merging_params['L1THGCALfull'] = merging_params['L1THGCAL'].clone(
+    distanceTol = cms.double(0.5),
+    overlapThreshold = cms.double(0.8)
+)
+
+
+merging_params['HGCALoverlap1'] = merging_params['HGCAL'].clone(
+    overlapThreshold = cms.double(0.2),
+)
+merging_params['HGCALoverlap2'] = merging_params['HGCAL'].clone(
+    overlapThreshold = cms.double(0.4),
+)
+merging_params['HGCALoverlap3'] = merging_params['HGCAL'].clone(
+    overlapThreshold = cms.double(0.6),
+)
+merging_params['HGCALoverlap4'] = merging_params['HGCAL'].clone(
+    overlapThreshold = cms.double(0.8),
+)
+
+
+merging_params['HGCALdistance1'] = merging_params['HGCAL'].clone(
+    distanceTol = cms.double(0.1)
+)
+merging_params['HGCALdistance2'] = merging_params['HGCAL'].clone(
+    distanceTol = cms.double(0.5)
+)
+merging_params['HGCALdistance3'] = merging_params['HGCAL'].clone(
+    distanceTol = cms.double(1.0)
+)
+merging_params['HGCALdistance4'] = merging_params['HGCAL'].clone(
+    distanceTol = cms.double(2.0)
 )

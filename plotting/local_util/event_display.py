@@ -12,7 +12,8 @@ def plot_an_event(filepath, ievt,
                   mode = 'etaphi', #options are ['etaphi', 'xyz']
                   show_genpart = True,
                   show_noise=True, 
-                  savefig='eventdisplay'):
+                  savefig='eventdisplay',
+                  verbose = True):
     """Plot an event from a given file.
 
     Args:
@@ -76,9 +77,10 @@ def plot_an_event(filepath, ievt,
     clus_pdgid = smp.variable.BasicVariable('track_pdgId', collection_name=cluster_collection).evaluate(dataset, smp.cut.NoCut())[0]
     clus_pt = smp.variable.BasicVariable('track_pt', collection_name=cluster_collection).evaluate(dataset, smp.cut.NoCut())[0]
 
-    for i in range(nClus):
-        if not clustermask[i]:
-            continue
+    selected_cluster_indices = [i for i in range(nClus) if clustermask[i]]
+    selected_cluster_indices.sort(key=lambda i: float(clus_pt[i]), reverse=True)
+
+    for i in selected_cluster_indices:
 
         clusterselections.append(smp.cut.EqualsCut('cluster0', i))
         pid = str(clus_pdgid[i])
@@ -94,6 +96,8 @@ def plot_an_event(filepath, ievt,
     genpart_lines_xy = []
     genpart_lines_xz = []
     genpart_lines_yz = []
+    genpart_lines_etaR = []
+    genpart_lines_phiR = []
 
     genpart_points = []
 
@@ -109,36 +113,48 @@ def plot_an_event(filepath, ievt,
         genpart_phi = smp.variable.BasicVariable('phi', collection_name=genpart_collection).evaluate(dataset, smp.cut.NoCut())[0]
         genpart_pdgid = smp.variable.BasicVariable('pdgId', collection_name=genpart_collection).evaluate(dataset, smp.cut.NoCut())[0]
 
-        for i in range(nGenPart):
-            if not genpart_mask[i]:
-                continue
+        r3Dvar = smp.variable.Magnitude3dVariable(
+            varX,
+            varY,
+            varZ
+        )
+
+        r3Dvals = r3Dvar.evaluate(
+            dataset, smp.cut.OrCuts(cuts)
+        )
+        minr3D = ak.min(r3Dvals)
+        maxr3D = ak.max(r3Dvals)
+
+        r2Dvals = varR.evaluate(
+            dataset, smp.cut.OrCuts(cuts)
+        )
+        r2D_start = np.min(r2Dvals) * 0.8
+        r2D_end = np.max(r2Dvals) * 1.05
+
+        selected_genpart_indices = [i for i in range(nGenPart) if genpart_mask[i]]
+        selected_genpart_indices.sort(key=lambda i: float(genpart_pt[i]), reverse=True)
+
+        for i in selected_genpart_indices:
+
+            if verbose:
+                print("Setting up genpart", i)
 
             pt = genpart_pt[i]
             eta = genpart_eta[i]
             phi = genpart_phi[i]
             theta = eta_to_theta(eta)
 
-            rvar = smp.variable.Magnitude3dVariable(
-                varX,
-                varY,
-                varZ
-            )
-            rvals = rvar.evaluate(
-                dataset, smp.cut.NoCut()
-            )
-            minr = ak.min(rvals)
-            maxr = ak.max(rvals)
 
-            start_r = minr * 0.5
-            end_r = maxr * 1.05
+            start_r3D = minr3D * 0.8
+            end_r3D = maxr3D * 1.05
 
-            x_start = start_r * np.sin(theta) * np.cos(phi)
-            y_start = start_r * np.sin(theta) * np.sin(phi)
-            z_start = start_r * np.cos(theta)
+            x_start = start_r3D * np.sin(theta) * np.cos(phi)
+            y_start = start_r3D * np.sin(theta) * np.sin(phi)
+            z_start = start_r3D * np.cos(theta)
 
-            x_end = end_r * np.sin(theta) * np.cos(phi)
-            y_end = end_r * np.sin(theta) * np.sin(phi)
-            z_end = end_r * np.cos(theta)
+            x_end = end_r3D * np.sin(theta) * np.cos(phi)
+            y_end = end_r3D * np.sin(theta) * np.sin(phi)
+            z_end = end_r3D * np.cos(theta)
 
             pid = str(genpart_pdgid[i])
             pid_name = common_names['pdgid_label_lookup'].get(pid, 'unknown')
@@ -159,6 +175,17 @@ def plot_an_event(filepath, ievt,
                             c='k', linestyle='--',
                             label=genlabel)
             )
+
+            genpart_lines_etaR.append(
+                smp.plottables.LineSpec([eta, eta], [r2D_start, r2D_end],
+                            c='k', linestyle='--',
+                            label=genlabel)
+            )
+            genpart_lines_phiR.append(
+                smp.plottables.LineSpec([phi, phi], [r2D_start, r2D_end],
+                            c='k', linestyle='--',
+                            label=genlabel)
+            )
             genpart_points.append(
                 smp.plottables.PointSpec([eta], [phi],
                             c='k', marker='*',
@@ -166,6 +193,8 @@ def plot_an_event(filepath, ievt,
             )
 
     if mode == 'etaphi':
+        if verbose:
+            print("eta phi plot")
         smp.scatter_2d(
             varEta, varPhi,
             cuts, dataset,
@@ -178,6 +207,8 @@ def plot_an_event(filepath, ievt,
             add_stuff = genpart_points
         )
 
+        if verbose:
+            print("eta R plot")
         smp.scatter_2d(
             varEta, varR,
             cuts, dataset,
@@ -187,9 +218,11 @@ def plot_an_event(filepath, ievt,
             ps = 10.0,
             output_path=savefig+"_etaR",
             legend_loc=(1.05, 0.9, 'upper left'),
-            #add_stuff = genpart_points
+            add_stuff = genpart_lines_etaR
         )
 
+        if verbose:
+            print("phi R plot")
         smp.scatter_2d(
             varPhi, varR,
             cuts, dataset,
@@ -199,10 +232,12 @@ def plot_an_event(filepath, ievt,
             ps = 10.0,
             output_path=savefig+"_phiR",
             legend_loc=(1.05, 0.9, 'upper left'),
-            #add_stuff = genpart_points
+            add_stuff = genpart_lines_phiR
         )
 
     elif mode == 'xyz':
+        if verbose:
+            print("xy plot")
         smp.scatter_2d(
             varX, varY, 
             cuts, dataset,
@@ -214,6 +249,8 @@ def plot_an_event(filepath, ievt,
             legend_loc=(1.05, 0.9, 'upper left'),
             add_stuff=genpart_lines_xy
         )
+        if verbose:
+            print("xz plot")
         smp.scatter_2d(
             varX, varZ, 
             cuts, dataset,
@@ -225,6 +262,8 @@ def plot_an_event(filepath, ievt,
             legend_loc=(1.05, 0.9, 'upper left'),
             add_stuff=genpart_lines_xz 
         )
+        if verbose:
+            print("yz plot")
         smp.scatter_2d(
             varY, varZ, 
             cuts, dataset,
