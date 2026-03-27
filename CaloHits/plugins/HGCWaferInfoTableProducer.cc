@@ -337,14 +337,6 @@ void HGCWaferInfoTableProducer::produce(edm::Event& evt, const edm::EventSetup& 
             printf("Warning: TC with detId %d does not belong to any wafer! Check the input data and the geometry.\n", TC.detId());
             TC_waferidx.push_back(-1); 
         } else {
-            DetId tcdetid = TC.detId();
-            if (tcdetid.det() == DetId::HGCalTrigger){
-                HGCalTriggerDetId tc_trg(tcdetid);
-                printf("TC with detId %d belongs to wafer index %d\n", TC.detId(), wafer_idx);
-                printf("\tTC (layer, waferU, waferV) = (%d, %d, %d)\n", triggerTools_.layerWithOffset(tc_trg), tc_trg.waferU(), tc_trg.waferV());
-                printf("\tWafer (layer, waferU, waferV) = (%d, %d, %d)\n", layer[wafer_idx], waferU[wafer_idx], waferV[wafer_idx]);
-    
-            }
             TC_waferidx.push_back(wafer_idx);
         }
     }
