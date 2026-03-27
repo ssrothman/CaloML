@@ -11,4 +11,8 @@
   <class name="std::vector<CaloML::SimTrackInfo>" />
   <class name="edm::Wrapper<CaloML::SimTrackInfo>" />
   <class name="edm::Wrapper<std::vector<CaloML::SimTrackInfo> >" />
+  <class name="CaloML::HGCWaferInfo" />
+  <class name="std::vector<CaloML::HGCWaferInfo>" />
+  <class name="edm::Wrapper<CaloML::HGCWaferInfo>" />
+  <class name="edm::Wrapper<std::vector<CaloML::HGCWaferInfo> >" />
 </lcgdict>

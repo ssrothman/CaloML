@@ -7,3 +7,4 @@
 #include "CaloML/DataFormats/interface/HitTruthInfo.h"
 #include "CaloML/DataFormats/interface/MergedSimClusterInfo.h"
 #include "CaloML/DataFormats/interface/SimTrackInfo.h"
+#include "CaloML/DataFormats/interface/HGCWaferInfo.h"

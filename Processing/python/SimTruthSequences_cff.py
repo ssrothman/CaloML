@@ -1,3 +1,4 @@
+from CaloML.CaloHits.HGCWafers_cff import setupHGCWaferInfoTables
 import FWCore.ParameterSet.Config as cms
 
 from CaloML.SimTruth.common_cff import * # pyright: ignore[reportMissingImports]
@@ -33,5 +34,12 @@ def SimTruthSequence_L1THGCAL(process):
     process = setupSimTruthTables(process, "L1THGCAL")
     process = setupSimHitTables(process, "L1THGCAL")
     process = setupRecHitTables(process, "L1THGCAL", "L1THGCAL")
+
+    process = setupHGCWaferInfoTables(
+        process, 
+        "FloatingpointThreshold0:HGCalConcentratorProcessorSelection", 
+        "RecHitL1THGCALTruthL1THGCALProducer",
+        "RecHitsL1THGCALTruthL1THGCAL"
+    )
 
     return process
