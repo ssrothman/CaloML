@@ -37,9 +37,8 @@ def SimTruthSequence_L1THGCAL(process):
 
     process = setupHGCWaferInfoTables(
         process, 
-        "FloatingpointThreshold0:HGCalConcentratorProcessorSelection", 
-        "RecHitL1THGCALTruthL1THGCALProducer",
-        "RecHitsL1THGCALTruthL1THGCAL"
+        'L1THGCAL',
+        'L1THGCAL'
     )
 
     return process

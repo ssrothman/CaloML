@@ -1,14 +1,21 @@
 import FWCore.ParameterSet.Config as cms # pyright: ignore[reportMissingImports]
 
-def setupHGCWaferInfoTables(process, TCs, TCtruth, tctablename):
-    process.HGCWaferInfos = cms.EDProducer("HGCWaferInfoProducer",
+from CaloML.SimTruth.common_cff import rechits
+
+def setupHGCWaferInfoTables(process, subdet, truth):
+    TCs = rechits[subdet]['hits'][0]
+    TCtruth = 'RecHit' + subdet + 'Truth' + truth + 'Producer'
+    tctablename = 'RecHits' + subdet + 'Truth' + truth
+
+    setattr(process, '%sWaferInfosTruth%sProducer' % (subdet, truth), cms.EDProducer("HGCWaferInfoProducer",
         TCs = cms.InputTag(TCs),
         verbose = cms.int32(0)
-    )
-    process.HGCWaferInfoTable = cms.EDProducer("HGCWaferInfoTableProducer",
+    ))
+    
+    setattr(process, '%sWaferInfosTruth%sTable' % (subdet, truth), cms.EDProducer("HGCWaferInfoTableProducer",
         TCs = cms.InputTag(TCs),
         TCtruth = cms.InputTag(TCtruth),
-        waferInfo = cms.InputTag("HGCWaferInfos"),
+        waferInfo = cms.InputTag("%sWaferInfosTruth%sProducer" % (subdet, truth)),
         verbose = cms.int32(0),
 
         bitsPerADC = cms.uint32(22),
@@ -21,11 +28,14 @@ def setupHGCWaferInfoTables(process, TCs, TCtruth, tctablename):
         useModuleFactor=cms.bool(False),
         normByMax=cms.bool(False),
 
-        name = cms.string("HGCWafers"),
+        name = cms.string("%sWafers%s" % (subdet, truth)),
         tctablename = cms.string(tctablename)
-    )
+    ))
 
-    process.HGCWaferInfoTask = cms.Task(process.HGCWaferInfos, process.HGCWaferInfoTable)
-    process.schedule.associate(process.HGCWaferInfoTask)
+    setattr(process, '%sWaferInfoTruth%sTask' % (subdet, truth), cms.Task(
+        getattr(process, '%sWaferInfosTruth%sProducer' % (subdet, truth)),
+        getattr(process, '%sWaferInfosTruth%sTable' % (subdet, truth))
+    ))
+    process.schedule.associate(getattr(process, '%sWaferInfoTruth%sTask' % (subdet, truth)))
 
     return process
