@@ -96,8 +96,8 @@ merging_params = {
     'HCAL' : cms.PSet(
         caloR = cms.double(180.6),
         caloZ = cms.double(388.8),
-        overlapThreshold = cms.double(-1),
-        distanceTol = cms.double(-1),
+        overlapThreshold = cms.double(.8),
+        distanceTol = cms.double(0.5),
         simhits = cms.VInputTag(
             'CalibratedHcalSimHits'
         )

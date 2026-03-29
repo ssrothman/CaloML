@@ -1,0 +1,17 @@
+<library name="CaloMLPFClustersPlugins" file="*.cc">
+    <use name="FWCore/Framework"/>
+    <use name="FWCore/PluginManager"/>
+    <use name="FWCore/ParameterSet"/>
+    <use name="FWCore/Utilities"/>
+    <use name="DataFormats/Common"/>
+    <use name="DataFormats/ParticleFlowReco"/>
+    <use name="DataFormats/NanoAOD"/>
+    <use name="DataFormats/EcalDetId"/>
+    <use name="DataFormats/HcalDetId"/>
+    <use name="CommonTools/Utils"/>
+    <use name="PhysicsTools/NanoAOD"/>
+    <use name="Geometry/CaloGeometry"/>
+    <use name="Geometry/Records"/>
+    <use name="Geometry/HcalTowerAlgo"/>
+    <flags EDM_PLUGIN="1"/>
+</library>
