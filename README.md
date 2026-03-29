@@ -39,7 +39,8 @@ Truth definitions are easy to create for different subdetectors, or multiple sim
   - [4.1 GEN-SIM-DIGI](#41-gen-sim-digi)
   - [4.2 RECO](#42-reco)
   - [4.3 NANO](#43-nano)
-- [5. Technical details](#5-technical-details)
+- [5. Plotting](#5-plotting)
+- [6. Technical details](#6-technical-details)
 
 
 ## 1. Quick start
@@ -585,6 +586,10 @@ CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables \
 ```
 
 
-## 5. Technical details
+## 5. Plotting
+
+I have written some plotting routines. They rely on my personal python backends, which are included as submodules (setup with `git submodule update --init --recursive`). There are a few useful scripts in `CaloML/plotting/scripts`
+
+## 6. Technical details
 
 The mechanics of the truth definition are detailed in slides [here](https://docs.google.com/presentation/d/1ELqLcqRZ1xdQrV5IbrIfoffT0ajOvjTFdIlm5xdPgv4/edit?usp=sharing). Validation studies are available [here](TO DO).
