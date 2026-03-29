@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-from CaloML.Clusters.SimplePFClusterFlatTableProducer_cfi import SimplePFClusterFlatTableProducer
-from CaloML.Clusters.PFClusterHitsTableProducer_cfi import PFClusterHitsTableProducer
+from CaloML.PFClusters.SimplePFClusterFlatTableProducer_cfi import SimplePFClusterFlatTableProducer
+from CaloML.PFClusters.PFClusterHitsTableProducer_cfi import PFClusterHitsTableProducer
 
 
 def setupClusterTables(process, src, clusterTableName, clusterHitsTableName, doc=''):
