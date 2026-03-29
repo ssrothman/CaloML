@@ -19,7 +19,7 @@ def setupClusterTables(process, src, clusterTableName, clusterHitsTableName, doc
         cms.Task containing both producers
     """
     
-    # Get base names from module names (e.g., HcalClusterTable -> HcalPFCluster)
+    # Get base names from module names
     clusterBaseName = clusterTableName.replace('Table', '')
     clusterHitsBaseName = clusterHitsTableName.replace('Table', '')
     
