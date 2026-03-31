@@ -275,19 +275,29 @@ void HGCWaferInfoTableProducer::produce(edm::Event& evt, const edm::EventSetup& 
 
         // AE input util
         
-        // it wants as input a vector of TCs
-        std::vector<l1t::HGCalTriggerCell> TCs_in_wafer;
-        for (unsigned TCidx : waferInfo.TCindices){
-            TCs_in_wafer.push_back(TCs[TCidx]);
-        }
-        aeInputUtil_.run(TCs_in_wafer);
-        sumCALQ.push_back(aeInputUtil_.getModSum());
+        if (tc0.det() == DetId::HGCalHSc){
+            sumCALQ.push_back(-1);
+            for (unsigned i=0; i< nInputs_; ++i) {
+                norm.push_back(-1);
+                ADC.push_back(-1);
+                CALQ.push_back(-1);
+                AEin.push_back(-1);
+            }
+        } else {
+            // it wants as input a vector of TCs
+            std::vector<l1t::HGCalTriggerCell> TCs_in_wafer;
+            for (unsigned TCidx : waferInfo.TCindices){
+                TCs_in_wafer.push_back(TCs[TCidx]);
+            }
+            aeInputUtil_.run(TCs_in_wafer);
+            sumCALQ.push_back(aeInputUtil_.getModSum());
 
-        for (unsigned i=0; i< nInputs_; ++i) {
-            norm.push_back(aeInputUtil_.getNorm(i));
-            ADC.push_back(aeInputUtil_.getADC(i));
-            CALQ.push_back(aeInputUtil_.getCALQ(i));
-            AEin.push_back(aeInputUtil_.getInput(i)/aeInputUtil_.getInputNorm());
+            for (unsigned i=0; i< nInputs_; ++i) {
+                norm.push_back(aeInputUtil_.getNorm(i));
+                ADC.push_back(aeInputUtil_.getADC(i));
+                CALQ.push_back(aeInputUtil_.getCALQ(i));
+                AEin.push_back(aeInputUtil_.getInput(i)/aeInputUtil_.getInputNorm());
+            }
         }
 
     }
