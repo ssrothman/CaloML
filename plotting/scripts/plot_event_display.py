@@ -1,14 +1,19 @@
 import argparse
+import sys
 from typing import Any
 
 import simonplot as smp
 
-from local_util.event_display import plot_an_event, plot_an_event_by_layer
+from local_util.event_display import PF_event_display, plot_an_event, plot_an_event_by_layer
 from local_util.naming import common_names
 
 
 def _normalize_input_path(path):
     return path if ':' in path else f'{path}:Events'
+
+
+def _argv_has_option(argv, option):
+    return any(token == option or token.startswith(f'{option}=') for token in argv)
 
 def _build_hits_cut(min_hit_energy, side):
     cuts: list[Any] = [smp.cut.GreaterThanCut('energy', min_hit_energy)]
@@ -31,6 +36,21 @@ def _build_clusters_cut(min_abs_eta, min_pt, max_abs_eta, side):
         cuts.append(smp.cut.LessThanCut('impact_eta', 0.0))
     if min_pt is not None:
         cuts.append(smp.cut.GreaterThanCut('impact_pt', min_pt))
+    if len(cuts) == 1:
+        return cuts[0]
+    return smp.cut.AndCuts(cuts)
+
+
+def _build_pf_clusters_cut(min_abs_eta, min_pt, max_abs_eta, side):
+    cuts: list[Any] = [smp.cut.GreaterThanCut(smp.variable.AbsVariable('eta'), min_abs_eta)]
+    if max_abs_eta is not None:
+        cuts.append(smp.cut.LessThanCut(smp.variable.AbsVariable('eta'), max_abs_eta))
+    if side == 'pos':
+        cuts.append(smp.cut.GreaterThanCut('eta', 0.0))
+    elif side == 'neg':
+        cuts.append(smp.cut.LessThanCut('eta', 0.0))
+    if min_pt is not None:
+        cuts.append(smp.cut.GreaterThanCut('pt', min_pt))
     if len(cuts) == 1:
         return cuts[0]
     return smp.cut.AndCuts(cuts)
@@ -79,13 +99,24 @@ def main():
         '--truth',
         type=str,
         default='HGCAL',
-        help='Truth collection suffix (default: HGCAL)',
+        help='Truth collection suffix (default: HGCAL; not supported with --pf)',
+    )
+    parser.add_argument(
+        '--pf',
+        action='store_true',
+        help='Use PF cluster display instead of simcluster-based display',
+    )
+    parser.add_argument(
+        '--pf-name',
+        type=str,
+        default=None,
+        help='PF cluster table base name for --pf mode (required with --pf)',
     )
     parser.add_argument(
         '--subdets',
         nargs='+',
         default=['HGCalEE', 'HGCalHSi', 'HGCalHSc'],
-        help='Subdetectors to draw (default: HGCalEE HGCalHSi HGCalHSc)',
+        help='Subdetectors to draw (default: HGCalEE HGCalHSi HGCalHSc; not supported with --pf)',
     )
     parser.add_argument(
         '--event-start',
@@ -198,6 +229,17 @@ def main():
 
     if args.by_layer and not args.barrel:
         raise ValueError('--by-layer currently supports only barrel mode. Pass --barrel.')
+    if args.pf and args.by_layer:
+        raise ValueError('--pf cannot be combined with --by-layer')
+    if args.pf and args.show_genpart:
+        raise ValueError('--pf mode does not support --show-genpart')
+    if args.pf:
+        if args.pf_name is None:
+            raise ValueError('--pf requires --pf-name')
+        if _argv_has_option(sys.argv[1:], '--truth'):
+            raise ValueError('--truth is not supported with --pf')
+        if _argv_has_option(sys.argv[1:], '--subdets'):
+            raise ValueError('--subdets is not supported with --pf')
 
     side = None
     if args.pos_side:
@@ -208,6 +250,12 @@ def main():
     input_path = _normalize_input_path(args.input)
     hits_cut: Any = _build_hits_cut(args.min_hit_energy, side)
     clusters_cut: Any = _build_clusters_cut(
+        args.min_cluster_abs_eta,
+        args.min_cluster_pt,
+        args.max_cluster_abs_eta,
+        side,
+    )
+    pf_clusters_cut: Any = _build_pf_clusters_cut(
         args.min_cluster_abs_eta,
         args.min_cluster_pt,
         args.max_cluster_abs_eta,
@@ -225,7 +273,18 @@ def main():
         if args.verbose:
             print(f'Plotting event {ievt} -> {output_base}')
 
-        if args.by_layer:
+        if args.pf:
+            PF_event_display(
+                filepath=input_path,
+                ievt=ievt,
+                PFCname=args.pf_name,
+                hits_cut=hits_cut,
+                cluster_cut=pf_clusters_cut,
+                mode=args.mode,
+                savefig=output_base,
+                verbose=args.verbose,
+            )
+        elif args.by_layer:
             plot_an_event_by_layer(
                 filepath=input_path,
                 ievt=ievt,

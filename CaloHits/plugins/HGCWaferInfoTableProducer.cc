@@ -275,7 +275,9 @@ void HGCWaferInfoTableProducer::produce(edm::Event& evt, const edm::EventSetup& 
 
         // AE input util
         
+
         if (tc0.det() == DetId::HGCalHSc){
+            // AE input not defined for scintillator, just fill in dummy values
             sumCALQ.push_back(-1);
             for (unsigned i=0; i< nInputs_; ++i) {
                 norm.push_back(-1);

@@ -1,8 +1,140 @@
+from typing import Any
+
 import simonplot as smp
 from local_util.naming import get_subdet_collection_cut, get_simcluster_collection_name, common_names
 import numpy as np
 from simonpy.coordinates import eta_to_theta
 import awkward as ak
+
+def PF_event_display(filepath, ievt,
+                     PFCname,
+                     hits_cut=smp.cut.GreaterThanCut('energy', 0.0),
+                     cluster_cut=smp.cut.GreaterThanCut('eta', 0),
+                     mode='etaphi',
+                     savefig='eventdisplay',
+                     verbose=True):
+    
+    dataset = smp.plottables.NanoEventsDataset(
+        fname = filepath, 
+        entry_start=ievt, 
+        entry_stop=ievt + 1,
+        color = 'k',
+        label = '',
+        key = 'events'
+    )
+
+    varX = smp.variable.BasicVariable('x', collection_name=PFCname+"Hits")
+    varY = smp.variable.BasicVariable('y', collection_name=PFCname+"Hits")
+    varZ = smp.variable.BasicVariable('z', collection_name=PFCname+"Hits")
+
+    varEta = smp.variable.BasicVariable('eta', collection_name=PFCname+"Hits")
+    varPhi = smp.variable.BasicVariable('phi', collection_name=PFCname+"Hits")
+    varR = smp.variable.Magnitude2dVariable(varX, varY)
+
+    cluster_cut.set_collection_name(PFCname)
+    clustermask = cluster_cut.evaluate(dataset)[0] # only one event
+    nClus = len(clustermask)
+
+    clus_pt = smp.variable.BasicVariable('pt', collection_name=PFCname).evaluate(dataset, smp.cut.NoCut())[0]
+
+    selected_cluster_indices = [i for i in range(nClus) if clustermask[i]]
+    selected_cluster_indices.sort(key=lambda i: float(clus_pt[i]), reverse=True)
+
+    cluster_selections = []
+    cluster_labels = []
+
+    for i in selected_cluster_indices:
+        clustersel = smp.cut.EqualsCut('clusterIdx', i)
+        clustersel.set_collection_name(PFCname+"Hits")
+        cluster_selections.append(clustersel)
+        cluster_labels.append('pT = %.1f GeV'%clus_pt[i])
+
+    cuts: list[Any] = []
+    for clustersel in cluster_selections:
+        cuts.append(
+            smp.cut.AndCuts([hits_cut, clustersel])
+        )
+        cuts[-1].set_collection_name(PFCname+"Hits")
+
+    if mode == 'etaphi':
+        if verbose:
+            print("eta phi plot")
+        smp.scatter_2d(
+            varEta, varPhi,
+            cuts, dataset,
+            labels_=cluster_labels,
+            ensure_square_aspect=True,
+            notext = True,
+            ps = 10.0,
+            output_path=savefig+"_etaphi",
+            legend_loc=(1.05, 0.9, 'upper left'),
+        )
+
+        if verbose:
+            print("eta R plot")
+        smp.scatter_2d(
+            varEta, varR,
+            cuts, dataset,
+            labels_=cluster_labels,
+            ensure_square_aspect=False,
+            notext = True,
+            ps = 10.0,
+            output_path=savefig+"_etaR",
+            legend_loc=(1.05, 0.9, 'upper left'),
+        )
+
+        if verbose:
+            print("phi R plot")
+        smp.scatter_2d(
+            varPhi, varR,
+            cuts, dataset,
+            labels_=cluster_labels,
+            ensure_square_aspect=False,
+            notext = True,
+            ps = 10.0,
+            output_path=savefig+"_phiR",
+            legend_loc=(1.05, 0.9, 'upper left'),
+        )
+
+    elif mode == 'xyz':
+        if verbose:
+            print("xy plot")
+        smp.scatter_2d(
+            varX, varY, 
+            cuts, dataset,
+            labels_=cluster_labels,
+            ensure_square_aspect=True,
+            notext = True,
+            ps = 10.0,
+            output_path=savefig+"_xy",
+            legend_loc=(1.05, 0.9, 'upper left'),
+        )
+        if verbose:
+            print("xz plot")
+        smp.scatter_2d(
+            varX, varZ, 
+            cuts, dataset,
+            labels_=cluster_labels,
+            ensure_square_aspect=True,
+            notext = True,
+            ps = 10.0,
+            output_path=savefig+"_xz",
+            legend_loc=(1.05, 0.9, 'upper left'),
+        )
+        if verbose:
+            print("yz plot")
+        smp.scatter_2d(
+            varY, varZ, 
+            cuts, dataset,
+            labels_=cluster_labels,
+            ensure_square_aspect=True,
+            notext = True,
+            ps = 10.0,
+            output_path=savefig+"_yz",
+            legend_loc=(1.05, 0.9, 'upper left'),
+        )
+    else:
+        raise ValueError("Invalid mode %s"%mode)        
 
 def plot_an_event(filepath, ievt, 
                   subdets, truth, 
@@ -87,7 +219,7 @@ def plot_an_event(filepath, ievt,
         pid_name = common_names['pdgid_label_lookup'].get(pid, pid)
         clusterlabels.append(f'Sim {pid_name}, pT={clus_pt[i]:.1f} GeV')
 
-    cuts = []
+    cuts: list[Any] = []
     for clustersel in clusterselections:
         cuts.append(
             smp.cut.ConcatCut.build_for_collections(smp.cut.AndCuts([hits_cut, clustersel]), rechit_collections, unique_cuts_l=rechit_cuts)
@@ -358,7 +490,7 @@ def plot_an_event_by_layer(
         Eta.set_collection_name(rechit_collection)
         Phi.set_collection_name(rechit_collection)
 
-        cuts = [smp.cut.AndCuts([rechit_cut, clustercut]) for clustercut in clusterselections]
+        cuts: list[Any] = [smp.cut.AndCuts([rechit_cut, clustercut]) for clustercut in clusterselections]
         for cut in cuts:
             cut.set_collection_name(rechit_collection)
         
@@ -382,7 +514,7 @@ def plot_an_event_by_layer(
 
         for layer in range(1, 5):
             layercut = smp.cut.EqualsCut("depth", layer)
-            cuts = [smp.cut.AndCuts([rechit_cut, clustercut, layercut]) for clustercut in clusterselections]
+            cuts: list[Any] = [smp.cut.AndCuts([rechit_cut, clustercut, layercut]) for clustercut in clusterselections]
             for cut in cuts:
                 cut.set_collection_name(rechit_collection)
             
@@ -404,7 +536,7 @@ def plot_an_event_by_layer(
         Eta.set_collection_name(rechit_collection)
         Phi.set_collection_name(rechit_collection)
        
-        cuts = [smp.cut.AndCuts([rechit_cut, clustercut]) for clustercut in clusterselections]
+        cuts: list[Any] = [smp.cut.AndCuts([rechit_cut, clustercut]) for clustercut in clusterselections]
         for cut in cuts:
             cut.set_collection_name(rechit_collection)
         

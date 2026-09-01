@@ -39,8 +39,9 @@ Truth definitions are easy to create for different subdetectors, or multiple sim
   - [4.1 GEN-SIM-DIGI](#41-gen-sim-digi)
   - [4.2 RECO](#42-reco)
   - [4.3 NANO](#43-nano)
-- [5. Plotting](#5-plotting)
-- [6. Technical details](#6-technical-details)
+- [5. Running on PF re-reco](#5-running-on-pf-re-reco)
+- [6. Plotting](#6-plotting)
+- [7. Technical details](#7-technical-details)
 
 
 ## 1. Quick start
@@ -585,11 +586,21 @@ CaloML/SimTruth/GenParticles_cff.setupGenParticlesTables \
     --customise_commands="process.schedule.remove(process.nanoAOD_step)"
 ```
 
+## 5. Running on PF re-reco
 
-## 5. Plotting
+The xrootd path for cernbox is `root://eosuser.cern.ch`. It's then just a simple matter of pointing the RECO -> NANO step at the re-reco files on cernbox. 
 
-I have written some plotting routines. They rely on my personal python backends, which are included as submodules (setup with `git submodule update --init --recursive`). There are a few useful scripts in `CaloML/plotting/scripts`
+## 6. Plotting
 
-## 6. Technical details
+I have written some plotting routines. They rely on my personal python backends, which are included as submodules (setup with `git submodule update --init --recursive`). There are a few useful scripts in `CaloML/plotting/scripts`.
+
+The event-display driver is `plot_event_display.py`. In the standard simcluster mode it accepts `--truth` and `--subdets` to select the rechit collections to draw. PF mode is enabled with `--pf` and is separate from the simcluster path: it requires an explicit `--pf-name <cluster table base name>` and does not use `--truth` or `--subdets`.
+
+Example PF invocation:
+```bash
+python scripts/plot_event_display.py NANO.root plots/event_display --pf --pf-name HcalCluster --mode xyz --event-start 0 --event-stop 1
+```
+
+## 7. Technical details
 
 The mechanics of the truth definition are detailed in slides [here](https://docs.google.com/presentation/d/1ELqLcqRZ1xdQrV5IbrIfoffT0ajOvjTFdIlm5xdPgv4/edit?usp=sharing). Validation studies are available [here](TO DO).
